@@ -1,0 +1,122 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+
+\title{How to be happy when your data are SAD}
+
+\author{Andrew J. Rominger, John Harte}
+
+
+\begin{document}
+\maketitle
+
+The species abundance distribution (SAD) is a fundamental pattern of
+biodiversity; any theory of biodiversity, in addition to whatever
+other patterns it may predict, should also make meaningful and
+accurate predictions of the SAD. While the SAD is likely insufficient
+to differentiate mechanistic hypotheses of community assembly its
+universality begs prediction and indeed can be used to reject some,
+but not all, theories of biodiversity. Reviews of theories predicting
+SADs have been presented ad nauseam. Here we sketch an outline of
+these theories for the sake of tradition but go one step further and
+use arguments from information theory, probability theory, simulation
+and empirical data to make explicit judgment about which should be
+abandoned and which warrant further consideration and
+investigation. We also use an extensive simulation experiment to
+investigate the most robust means for analyzing species abundance
+data. Information theoretic methods for comparing models of the SAD
+are the most robust means available; this needs no validation by
+simulation. Using these methods we find strongest support for the
+negative binomial distribution. To directly evaluate the fit of one
+SAD model to data we find that a z-score based on the log likelihood
+is the most efficient method (i.e. $(logLik_{obs} -
+E[logLik_{theoretical}]) / SD[logLik_{theoretical}]$ where $logLik_{obs}$ is
+the observed log likelihood and $logLik_{theoretical}$ refers to the
+theoretical SAD calculated analytically or by
+simulation). Additionally, random subsampling SAD data has no
+meaningful effect on the identification of the most supported model
+given the data. Conversely, binning species abundance data hugely
+distorts any ability to correctly estimate models.  Taking these
+results together we find that the log-normal distribution with
+associated veil line argument is invalid and the recently proposed
+gambin model can never be realistically estimated from data; both
+should be abandoned.  The negative binomial has a strong tradition in
+ecology and should be re-invigorated.  Using read data and the sketch
+of a probabilistic, non-neutral community assembly model, we conclude
+by exploring the causes and consequences of the wide support for the
+negative binomial.
+
+
+\section{On the utility of SADs}
+SADs are a fundamental pattern of biodviersity, any thoery of
+biodiversity, in addition to whatever other patterns it may predict,
+should also make meaningful and accurate predictions of the SAD
+
+\section{SAD theories}
+Reviews of theories predicting SADs have been presented ad
+nauseum. Here we sketch an outline of these theories for the sake of
+tradition but go one step further and make explicit judgement about
+which should be abandonded and which warrent further consideration and
+investigation.
+
+\subsection{A SAD history}
+Broken stick, log series, log normal, neutral theory, mechanismless
+theory
+
+\subsection{Bad SAD theories}
+The log-normal is not valid and not useful, nor is it well supported
+by data. The veil-line is a misconception from poorly thought-out
+subsampling as discussed in Section \ref{sec:samp}.
+
+The Gambin model is also not valid nor well supported, its support
+arrises from innapropriate data handling as discussed in Section
+\ref{sec:statPrac}. Mathematically it is also a basterdization of the
+much more correct and informative negative binomial model of species
+abundance.
+
+\subsection{SAD theories for the future}
+Return to Fisher's formulation and Preston's ergodic hypothesis
+
+
+\section{SAD subsamples}
+\label{sec:samp}
+
+SADs are sampled by indiviudal not by species. The veil line arrises
+by inappropriately sampling by species.
+
+SADs have a discrete spatio-temporal extent. This is arbitrary but
+important: The log normal shape arrises by mixing samples
+(i.e. multiple years of moth trapping, combining distinct spatial
+samples)
+
+How SADs scale is another issue and an interesting topic on inquery.
+The fact that there is scale depenence in SADs doesn't negate the fact
+that sampling them must be viewed as discrete in space, time and
+taxonomy.
+
+\section{Best and worst statistical practices for comparing
+  theoretical and emperical SADs}
+\label{sec:statPrac}
+
+Do not bin data. Deal with subsampling appropriately
+
+\subsection{Comparing theory to data}
+Likelihood approaches, RAD, a note on hierarchical models and how
+commonly used normal hyperdistribuitons might nearly always be wrong.
+
+\section{Biological and statistical limits to interpreting SADs}
+
+How small a sample is too small?
+
+Can we distinguish log normal hyperdistributions from Gamma
+hyperdistributions?
+
+Recent mechanismless theory says SADs might just be statistical
+outcome, so how much should we really infer from them?
+
+\end{document}
