@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{natbib}
+
+\title{Summary of literature for ``How to be happy when your data are SAD''}
+
+\author{}
+
+
+\begin{document}
+\maketitle
+
+\paragraph{\cite{williamson2005}}
+Central limit theorem not for SAD (unless neutral populations) and
+veil line doesn't exist.  Should check out other papers for discussion
+of sampling like Dewdney (1998).  Check out Dewdney in genreal.
+
+
+\paragraph{\cite{dewdney1998}}
+There is no veil line, species are sampled according to a
+hypergeometric which can be approximated by a Poisson.
+
+\paragraph{\cite{dewdney2000}}
+Too much rarity for log-normal to be valid. Shits on negbinom, but
+negbinom can produce the right amount of rarity
+
+\paragraph{\cite{chisholm2007}}
+Shows that veil line is valid on log scale but that has no relevance
+for actually fitting data.  Shows more robustly than
+\citep{dewdney1998} that the shape of the SAD is impervious to
+sampling, but only when total community is large relative to sample, a
+condition that is likely to hold.
+
+\paragraph{\cite{dewdney2003}}
+All species ``orbit'' the mean of the community and have approximately
+equal birth and death rates (i.e. birth $\approx$ death, not
+neccesarily neutrality) ``stochastic communities hypothesis'' proposed
+as the overall mechanism governing abundances in all natural
+communities. It is not a single mechanism, per se, but the net effect
+of all environmental influences.
+
+Hughes, R.G. (1986) Theories and models of species abundance. American Naturalist, 128, 879–899.
+
+
+
+Dewdney, A.K. (2003) The stochastic community and the logistic-J distribution. Acta Oecologia, 24, 221–229.
+
+\bibliographystyle{ecol_let}
+\bibliography{sad.bib}
+
+\end{document}

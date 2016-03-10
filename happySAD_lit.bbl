@@ -1,0 +1,10 @@
+\begin{thebibliography}{1}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Williamson \& J~GASTON(2005)}]{williamson2005}
+Williamson, M. \& J~GASTON, K. (2005).
+\newblock The lognormal distribution is not an appropriate null hypothesis for
+  the species--abundance distribution.
+\newblock \emph{Journal of Animal Ecology}, 74, 409--422.
+
+\end{thebibliography}
