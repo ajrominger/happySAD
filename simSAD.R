@@ -25,11 +25,11 @@ nspp <- 10^seq(1.75, 2.75, length=5) - 10^seq(1.75, 2.75, length=5) %% 50
 prop <- 10^seq(-0.6, 0, length=5) - 10^seq(-0.6, 0, length=5) %% 0.05
 
 ## SAD parameters
-sad.par <- list(fish=10^seq(0, -2.5, length=4),
-                plnorm=list(c(0, 1), c(3, 1), c(1, 2), c(2.5, 2.5)),
-                stick=seq(0.5, 1/100, length=4),
+sad.par <- list(fish=10^seq(-1, -3, length=4),
+                plnorm=list(c(0, 1), c(3, 1), c(1, 2), c(0, 2.5)),
+                stick=seq(0.5, 1/50, length=4),
                 tnegb=list(c(1, 1), c(8, 1), c(20, 1.5), c(100, 1.5)),
-                tpois=seq(2, 15, length=4))
+                tpois=seq(5, 50, length=4))
 
 sad.rfun <- lapply(names(sad.par), function(f) {
     lapply(1:4, function(p) {
@@ -41,14 +41,67 @@ sad.rfun <- lapply(names(sad.par), function(f) {
     })
 })
 
+names(sad.rfun) <- names(sad.par)
+
+rapply(sad.rfun, function(f) f(3), how='unlist')
 
 ## ==============================
 ## function to run one simulation
 ## ==============================
 
-simSAD <- function(sad.par, nspp, prop) {
-    
+simSAD <- function(rfuns, nspp, prop, nrep=1000) {
+    rapply(rfuns, function(f) {
+        ## simulate data
+        dat <- sample.sad(f(nspp), prob=prop)
+        
+        ## fit SAD models
+        fit <- fitSAD(dat, keepData=FALSE)
+        
+        ## apply over fitted SAD objects
+        fit.stats <- sapply(fit, function(x) {
+            ## extract needed functions and n from fitted SAD
+            n <- x$nobs
+            newrfun <- getrfun(x)
+            newdfun <- getdfun(x)
+            predRank <- sad2Rank(x)
+            predCDF <- getpfun(x)(unique(dat))
+            
+            ## helper function to extract needed stats from simulation
+            getStats <- function(r) {
+                r <- sort(r, decreasing=TRUE)
+                obsCDF <- .ecdf(r)[, 2]
+                
+                radE <- r - predRank
+                radElog <- log(r) - log(predRank)
+                cdfE <- obsCDF - predCDF
+                cdfElog <- log(obsCDF) - log(predCDF)
+                
+                c(ll=sum(newdfun(r, log=TRUE)), 
+                  radMSE=mean(radE^2), radMSElog=mean(radElog^2), 
+                  radMSErel=mean((radE/r)^2), radMSElogrel=mean((radElog/log(r))^2),
+                  cdfMSE=mean(cdfE^2), cdfMSElog=mean(cdfElog^2), 
+                  cdfMSErel=mean((cdfE/r)^2), cdfMSElogrel=mean((cdfElog/log(obsCDF))^2))
+            }
+            
+            ## simulate for z-scores
+            z <- replicate(nrep, getStats(newrfun(x$nobs)))
+            z <- rbind(getStats(dat), z)
+            
+            zOut <- apply(z, 2, function(s) {
+                Z <- ((s[1] - mean(s))/sd(s))^2
+                P <- sum(Z > ((s - mean(s))/sd(s))^2)/nrep
+                return(c(z=Z, p=P))
+            })
+            
+            ## return AIC and summarized z-scores
+            return(c(aic=AIC(x), as.vector(zOut)))
+        })
+        
+        return(fit.stats)
+    }) 
 }
+
+
 
 ## ======================
 ## save simulation output
