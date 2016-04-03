@@ -32,7 +32,7 @@ for(i in 1:length(sad.par)) {
         plot(dfun(1:50, sad.par[[i]][j]), log='xy', type='l', xaxt='n', yaxt='s', lwd=3, ylim=ylim)
         if(i == 5) logAxis(1)
         
-        # legend('topright', legend=mean(rfun(100, sad.par[[i]][j])))
+        legend('topright', legend=mean(rfun(100, sad.par[[i]][j])))
     }
     
     mtext(names(sad.par[i]), side=4, line=1, xpd=NA)
