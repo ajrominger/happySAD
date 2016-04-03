@@ -7,6 +7,9 @@ setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
 source('~/R_functions/logAxis.R')
 
+## read in simulation
+load('sim_out.RData')
+
 ## plot theoretical SADs
 par(mfrow=c(5, 4), mar=rep(0.5, 4), oma=c(4, 3, 1, 3)+0.1)
 
