@@ -31,6 +31,24 @@ sad.par <- list(fish=10^seq(0, -2.5, length=4),
                 tnegb=list(c(1, 1), c(8, 1), c(20, 1.5), c(100, 1.5)),
                 tpois=seq(2, 15, length=4))
 
+sad.rfun <- lapply(names(sad.par), function(f) {
+    lapply(1:4, function(p) {
+        if(f %in% c('plnorm', 'tnegb')) {
+            return(function(n) get(sprintf('r%s', f))(n, sad.par[[f]][[p]][1], sad.par[[f]][[p]][2]))
+        } else {
+            return(function(n) get(sprintf('r%s', f))(n, sad.par[[f]][p]))
+        }
+    })
+})
+
+
+## ==============================
+## function to run one simulation
+## ==============================
+
+simSAD <- function(sad.par, nspp, prop) {
+    
+}
 
 ## ======================
 ## save simulation output
