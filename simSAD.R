@@ -12,6 +12,7 @@
 
 setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
+library(parallel)
 
 
 ## =================
@@ -43,14 +44,12 @@ sad.rfun <- lapply(names(sad.par), function(f) {
 
 names(sad.rfun) <- names(sad.par)
 
-rapply(sad.rfun, function(f) f(3), how='unlist')
-
 ## ==============================
 ## function to run one simulation
 ## ==============================
 
 simSAD <- function(rfuns, nspp, prop, nrep=1000) {
-    rapply(rfuns, function(f) {
+    rapply(rfuns, how='replace', f=function(f) {
         ## simulate data
         dat <- sample.sad(f(nspp), prob=prop)
         
@@ -63,38 +62,42 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
             n <- x$nobs
             newrfun <- getrfun(x)
             newdfun <- getdfun(x)
-            predRank <- sad2Rank(x)
-            predCDF <- getpfun(x)(unique(dat))
+            predRank <- sad2Rank(x, x$nobs)
+            predCDF <- getpfun(x)
             
             ## helper function to extract needed stats from simulation
             getStats <- function(r) {
                 r <- sort(r, decreasing=TRUE)
-                obsCDF <- .ecdf(r)[, 2]
+                if(!is.finite(mean(r)) | !is.finite(var(r))) browser()
+                obsCDF <- .ecdf(r)
                 
                 radE <- r - predRank
                 radElog <- log(r) - log(predRank)
-                cdfE <- obsCDF - predCDF
-                cdfElog <- log(obsCDF) - log(predCDF)
+                cdfE <- obsCDF[, 2] - predCDF(obsCDF[, 1])
+                cdfElog <- log(obsCDF[, 2]) - log(predCDF(obsCDF[, 1]))
                 
                 c(ll=sum(newdfun(r, log=TRUE)), 
                   radMSE=mean(radE^2), radMSElog=mean(radElog^2), 
-                  radMSErel=mean((radE/r)^2), radMSElogrel=mean((radElog/log(r))^2),
+                  radMSErel=mean((radE/r)^2), # radMSElogrel=mean((radElog/log(r))^2),
                   cdfMSE=mean(cdfE^2), cdfMSElog=mean(cdfElog^2), 
-                  cdfMSErel=mean((cdfE/r)^2), cdfMSElogrel=mean((cdfElog/log(obsCDF))^2))
+                  cdfMSErel=mean((cdfE/predCDF(obsCDF[, 1]))^2), cdfMSElogrel=mean((cdfElog/log(predCDF(obsCDF[, 1])))^2))
             }
-            
+            # browser()
             ## simulate for z-scores
             z <- replicate(nrep, getStats(newrfun(x$nobs)))
-            z <- rbind(getStats(dat), z)
+            z <- cbind(getStats(dat), z)
             
-            zOut <- apply(z, 2, function(s) {
+            zOut <- apply(z, 1, function(s) {
                 Z <- ((s[1] - mean(s))/sd(s))^2
-                P <- sum(Z > ((s - mean(s))/sd(s))^2)/nrep
+                P <- sum(Z >= ((s - mean(s))/sd(s))^2)/nrep
                 return(c(z=Z, p=P))
             })
             
             ## return AIC and summarized z-scores
-            return(c(aic=AIC(x), as.vector(zOut)))
+            outNames <- c('aic', as.vector(outer(rownames(zOut), colnames(zOut), paste, sep='_')))
+            out <- c(AIC(x), as.vector(zOut))
+            names(out) <- outNames
+            return(out)
         })
         
         return(fit.stats)
@@ -102,6 +105,21 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
 }
 
 
+
+lapply(nspp, function(ns) {
+    lapply(prop, function(p) {
+        simSAD(sad.rfun)
+    })
+})
+
+bla <- simSAD(sad.rfun, 50, 0.5, 2)
+
+## completing one iteration goes like 6 + 4.213*nrep
+
+
+nsim <- 1000
+nrep <- 500
+(((((6 + 4.213*nrep) * length(nspp) * length(prop) * nsim)/60)/60)/24)/12
 
 ## ======================
 ## save simulation output
