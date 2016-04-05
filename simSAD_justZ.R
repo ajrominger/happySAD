@@ -1,7 +1,7 @@
 setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
 # install.packages('~/Dropbox/Research/pika', repos=NULL, type='source')
-library(pika)
+# library(pika)
 library(parallel)
 
 
@@ -12,7 +12,8 @@ outNames <- c('aic', 'z_ll', 'p_ll', 'z_radMSE', 'p_radMSE', 'z_radMSElog', 'p_r
 
 nsim <- 500
 nrep <- 500
-sim.out <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
+
+sim.outZ <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
     print(i)
     
     dat <- rtpois(100, 4)
@@ -63,3 +64,4 @@ sim.out <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
     })
 })
 
+save(sim.outZ, file='sim_out_Z.RData')
