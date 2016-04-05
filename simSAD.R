@@ -99,7 +99,7 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
                 
                 zOut <- apply(z, 1, function(s) {
                     Z <- ((s[1] - mean(s))/sd(s))^2
-                    P <- sum(Z >= ((s - mean(s))/sd(s))^2)/(nrep+1)
+                    P <- sum(Z <= ((s - mean(s))/sd(s))^2)/(nrep+1)
                     return(c(z=Z, p=P))
                 })
                 
