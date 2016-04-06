@@ -12,8 +12,9 @@
 
 setwd('~/Dropbox/Research/happySAD')
 # devtools::load_all('../pika')
-install.packages('~/Dropbox/Research/pika', repos=NULL, type='source')
-library(pika)
+# install.packages('~/Dropbox/Research/pika', repos=NULL, type='source')
+devtools::install_github('ajrominger/pika')
+# library(pika)
 library(parallel)
 
 
@@ -28,7 +29,7 @@ nspp <- 10^seq(1.75, 2.75, length=5) - 10^seq(1.75, 2.75, length=5) %% 50
 prop <- 10^seq(-0.6, 0, length=5) - 10^seq(-0.6, 0, length=5) %% 0.05
 
 ## SAD parameters
-sad.par <- list(fish=10^seq(-1, -3, length=4),
+sad.par <- list(fish=10^seq(-1.5, -3.5, length=4),
                 plnorm=list(c(0, 1), c(3, 1), c(1, 2), c(0, 2.5)),
                 stick=seq(0.5, 1/50, length=4),
                 tnegb=list(c(1, 1), c(8, 1), c(20, 1.5), c(100, 1.5)),
