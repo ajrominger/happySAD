@@ -23,17 +23,20 @@ library(parallel)
 ## =================
 
 ## number of species
-nspp <- 10^seq(1.75, 2.75, length=5) - 10^seq(1.75, 2.75, length=5) %% 50
+nspp <- 10^seq(1.95, 2.7, length=4)
+nspp <- nspp - nspp %% 20
 
 ## proportion sampled
-prop <- 10^seq(-0.6, 0, length=5) - 10^seq(-0.6, 0, length=5) %% 0.05
+prop <- 10^seq(-0.4, 0, length=4)
+prop <- prop - prop %% 0.05
 
 ## SAD parameters
-sad.par <- list(fish=10^seq(-1.5, -3.5, length=4),
-                plnorm=list(c(0, 1), c(3, 1), c(1, 2), c(0, 2.5)),
-                stick=seq(0.5, 1/50, length=4),
-                tnegb=list(c(1, 1), c(8, 1), c(20, 1.5), c(100, 1.5)),
-                tpois=seq(5, 50, length=4))
+sad.par <- list(fish=10^seq(-1.25, -2, length=4),
+                plnorm=list(c(2, 0.5), c(3, 0.5), c(0, 1.5), c(1, 1.5)),
+                stick=10^seq(-0.7, -1.7, length=4),
+                tnegb=list(c(20, 4), c(8, 1.5), c(8, 0.5), c(100, 3))
+                # tpois=seq(5, 50, length=4)
+                )
 
 sad.rfun <- lapply(names(sad.par), function(f) {
     lapply(1:4, function(p) {
@@ -46,6 +49,16 @@ sad.rfun <- lapply(names(sad.par), function(f) {
 })
 
 names(sad.rfun) <- names(sad.par)
+
+par(mfrow=c(length(sad.par), 4), mar=c(1.5, 1.5, 0, 0)+0.1, mgp=c(2, 0.4, 0), tcl=-0.4, oma=c(4, 4, 0, 0))
+for(i in 1:length(sad.par)) {
+    for(j in 1:4) {
+        r <- sort(sample.sad(sad.rfun[[i]][[j]](nspp[4]), prob=prop[4]), TRUE)
+        plot(r, xlab='', ylab='', log='y', type='l', ylim=c(1, max(r)))
+        for(k in 1:3) lines(sort(sample.sad(sad.rfun[[i]][[j]](nspp[4]), prob=prop[k]), TRUE))
+    }
+}
+
 
 ## ==============================
 ## function to run one simulation
