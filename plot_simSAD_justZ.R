@@ -16,20 +16,9 @@ simZ <- array(unlist(sim.outZ), dim=c(dim(sim.outZ[[1]]), length(sim.outZ)),
 ## flip pval for ll
 simZ[3, 1, ] <- 1 - simZ[3, 1, ] + 1/500
 
-simZ[seq(3, 15, by=2), , 3]
-simZ[seq(2, 14, by=2), , 3]
-
 ## plot AIC
 plot(density(simZ[1, 1, ]), xlim=range(simZ[1, , ]))
 lines(density(simZ[1, 2, ]), col='red')
-
-## plot p-vals
-par(mfcol=c(7, 1), mar=rep(0.1, 4), oma=c(4, 4, 1, 1)+0.1)
-
-for(i in seq(3, 15, by=2)) {
-    plot(density(simZ[i, 1, ]), xlim=0:1, axes=FALSE, frame.plot=TRUE)
-    lines(density(simZ[i, 2, ]), col='red')
-}
 
 
 ## ==============================
