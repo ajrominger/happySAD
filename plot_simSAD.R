@@ -40,3 +40,15 @@ for(i in 1:length(sad.par)) {
 
 mtext('Abundance', side=1, line=3, outer=TRUE)
 mtext('Probability', side=2, line=2, outer=TRUE)
+
+
+
+
+par(mfrow=c(length(sad.par), 4), mar=c(1.5, 1.5, 0, 0)+0.1, mgp=c(2, 0.4, 0), tcl=-0.4, oma=c(4, 4, 0, 0))
+for(i in 1:length(sad.par)) {
+    for(j in 1:4) {
+        r <- sort(sample.sad(sad.rfun[[i]][[j]](nspp[4]), prob=prop[4]), TRUE)
+        plot(r, xlab='', ylab='', log='y', type='l', ylim=c(1, max(r)))
+        for(k in 1:3) lines(sort(sample.sad(sad.rfun[[i]][[j]](nspp[4]), prob=prop[k]), TRUE))
+    }
+}
