@@ -16,8 +16,9 @@ nrep <- 500
 sim.outZ <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
     print(i)
     
-    dat <- rtpois(100, 4)
-    fit <- fitSAD(dat, c('stick', 'tpois'))
+    dat <- rtnegb(100, 8, 5)
+    fit <- fitSAD(dat, c('tpois', 'tnegb'))
+
     
     fit.stats <- sapply(fit, function(x) {
         ## extract needed functions and n from fitted SAD
