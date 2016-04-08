@@ -12,9 +12,9 @@
 
 setwd('~/Dropbox/Research/happySAD')
 # devtools::load_all('../pika')
-# install.packages('~/Dropbox/Research/pika', repos=NULL, type='source')
-devtools::install_github('ajrominger/pika')
-# library(pika)
+install.packages('~/Dropbox/Research/pika', repos=NULL, type='source')
+# devtools::install_github('ajrominger/pika')
+library(pika)
 library(parallel)
 
 
@@ -51,19 +51,17 @@ sad.rfun <- lapply(names(sad.par), function(f) {
 names(sad.rfun) <- names(sad.par)
 
 
-
-
 ## ==============================
 ## function to run one simulation
 ## ==============================
 
-simSAD <- function(rfuns, nspp, prop, nrep=1000) {
+simSAD <- function(rfuns, nspp, prop, nrep=500) {
     rapply(rfuns, how='replace', f=function(f) {
         ## simulate data
         dat <- sample.sad(f(nspp), prob=prop)
         
         ## fit SAD models
-        fit <- fitSAD(dat, keepData=FALSE)
+        fit <- fitSAD(dat, c('fish', 'plnorm', 'stick', 'tnegb'), keepData=FALSE)
         
         ## names for output
         outNames <- c('aic', 'z_ll', 'p_ll', 'z_radMSE', 'p_radMSE', 'z_radMSElog', 'p_radMSElog', 
@@ -73,7 +71,7 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
         ## apply over fitted SAD objects
         fit.stats <- sapply(fit, function(x) {
             ## only if model is tpois or stick will we do z-score stuff
-            if(x$model %in% c('tpois', 'stick')) {
+            if(x$model %in% c('plnorm', 'tnegb')) {
                 ## extract needed functions and n from fitted SAD
                 n <- x$nobs
                 newrfun <- getrfun(x)
@@ -84,7 +82,6 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
                 ## helper function to extract needed stats from simulation
                 getStats <- function(r) {
                     r <- sort(r, decreasing=TRUE)
-                    if(!is.finite(mean(r)) | !is.finite(var(r))) browser()
                     obsCDF <- .ecdf(r)
                     
                     radE <- r - predRank
@@ -113,6 +110,7 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
                 ## return AIC and summarized z-scores
                 # outNames <- c('aic', as.vector(outer(rownames(zOut), colnames(zOut), paste, sep='_')))
                 out <- c(AIC(x), as.vector(zOut))
+#             out <- AIC(x)
                 
             } else {
                 out <- c(AIC(x), rep(NA, length(outNames)-1))
@@ -130,11 +128,11 @@ simSAD <- function(rfuns, nspp, prop, nrep=1000) {
 ## ==============
 
 nsim <- 500
-sim.out <- mclapply(1:nsim, mc.cores=3, FUN=function(n) {
+sim.out <- mclapply(1:nsim, mc.cores=16, FUN=function(n) {
     print(n)
     lapply(nspp, function(ns) {
         lapply(prop, function(p) {
-            simSAD(sad.rfun, ns, p, 1000)
+            simSAD(sad.rfun, ns, p, 500)
         })
     })
 })
