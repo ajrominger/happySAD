@@ -14,7 +14,7 @@ simZ <- array(unlist(sim.outZ), dim=c(dim(sim.outZ[[1]]), length(sim.outZ)),
               dimnames=list(rownames(sim.outZ[[1]]), colnames(sim.outZ[[1]]), 1:length(sim.outZ)))
 
 ## flip pval for ll
-simZ[3, 1, ] <- 1 - simZ[3, 1, ] + 1/500
+# simZ[3, 1, ] <- 1 - simZ[3, 1, ] + 1/500
 
 ## plot AIC
 plot(density(simZ[1, 1, ]), xlim=range(simZ[1, , ]))
