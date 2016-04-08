@@ -31,7 +31,6 @@ sim.outZ <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
         ## helper function to extract needed stats from simulation
         getStats <- function(r) {
             r <- sort(r, decreasing=TRUE)
-            if(!is.finite(mean(r)) | !is.finite(var(r))) browser()
             obsCDF <- .ecdf(r)
             
             radE <- r - predRank
