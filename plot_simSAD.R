@@ -65,15 +65,22 @@ pars <- unlist(lapply(sad.par, function(x) {
     }
 }))
 
+
+## combine sim results into a 3D array
+
 sim <- lapply(sim.out, function(x) {
     out <- melt(x)
     colnames(out) <- c('stat', 'fittedDist', 'value', 'pars', 'actualDist', 'prop', 'nspp')
     out$pars <- pars[paste(out$actualDist, out$pars, sep='')]
     out$prop <- prop[out$prop]
     out$nspp <- nspp[out$nspp]
+    out$stat <- as.character(out$stat)
+    out$fittedDist <- as.character(out$fittedDist)
     
     return(out)
 })
 
-sim <- array(unlist(sim), dim=c(dim(sim[[1]]), length(sim.out)),
+sim <- array(unlist(sim), dim=c(dim(sim[[1]]), length(sim)),
              dimnames=list(rownames(sim[[1]]), colnames(sim[[1]]), 1:length(sim)))
+
+
