@@ -5,6 +5,7 @@
 
 setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
+library(reshape2)
 source('~/R_functions/logAxis.R')
 
 ## read in simulation
@@ -42,8 +43,6 @@ mtext('Abundance', side=1, line=3, outer=TRUE)
 mtext('Probability', side=2, line=2, outer=TRUE)
 
 
-
-
 par(mfrow=c(length(sad.par), 4), mar=c(1.5, 1.5, 0, 0)+0.1, mgp=c(2, 0.4, 0), tcl=-0.4, oma=c(4, 4, 0, 0))
 for(i in 1:length(sad.par)) {
     for(j in 1:4) {
@@ -52,3 +51,29 @@ for(i in 1:length(sad.par)) {
         for(k in 1:3) lines(sort(sample.sad(sad.rfun[[i]][[j]](nspp[4]), prob=prop[k]), TRUE))
     }
 }
+
+
+## clean simulation results
+
+sim.out <- sim.out[sapply(sim.out, class) == 'list']
+
+pars <- unlist(lapply(sad.par, function(x) {
+    if(class(x) == 'numeric') {
+        return(as.character(round(x, 3)))
+    } else {
+        return(sapply(x, function(X) paste(round(X, 3), collapse=', ')))
+    }
+}))
+
+sim <- lapply(sim.out, function(x) {
+    out <- melt(x)
+    colnames(out) <- c('stat', 'fittedDist', 'value', 'pars', 'actualDist', 'prop', 'nspp')
+    out$pars <- pars[paste(out$actualDist, out$pars, sep='')]
+    out$prop <- prop[out$prop]
+    out$nspp <- nspp[out$nspp]
+    
+    return(out)
+})
+
+sim <- array(unlist(sim), dim=c(dim(sim[[1]]), length(sim.out)),
+             dimnames=list(rownames(sim[[1]]), colnames(sim[[1]]), 1:length(sim)))
