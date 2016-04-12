@@ -1,8 +1,8 @@
-## ======================================================================
+## =======================
 ## plotting SAD simulation
-## ======================================================================
+## =======================
 
-
+## set-up
 setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
 library(reshape2)
@@ -11,7 +11,15 @@ source('~/R_functions/logAxis.R')
 ## read in simulation
 load('sim_out.RData')
 
+## standarize colors for models
+cols <- hsv(c(0.52, 0.02, 0.12, 0.65), c(0.8, 0.7, 0.8, 0.7), c(0.8, 0.75, 0.9, 0.6))
+names(cols) <- c('fish', 'plnorm', 'stick', 'tnegb')
+
+
+## =====================
 ## plot theoretical SADs
+## =====================
+
 par(mfrow=c(5, 4), mar=rep(0.5, 4), oma=c(4, 3, 1, 3)+0.1)
 
 for(i in 1:length(sad.par)) {
@@ -53,7 +61,9 @@ for(i in 1:length(sad.par)) {
 }
 
 
+## ========================
 ## clean simulation results
+## ========================
 
 sim.out <- sim.out[sapply(sim.out, class) == 'list']
 
@@ -83,4 +93,59 @@ sim <- lapply(sim.out, function(x) {
 sim <- array(unlist(sim), dim=c(dim(sim[[1]]), length(sim)),
              dimnames=list(rownames(sim[[1]]), colnames(sim[[1]]), 1:length(sim)))
 
+
+## ===========================
+## plot AIC simulation results
+## ===========================
+
+## extract and summarize AIC
+
+sim.aic <- sim[seq(1, dim(sim)[1], by=15), -1, ]
+
+aic.sum <- lapply(seq(0, dim(sim.aic)[1]-1, by=4), function(i) {
+    s <- sim.aic[i+(1:4), 2, ]
+    
+    awin <- t(apply(s, 2, function(x) {
+        x <- as.numeric(x)
+        wins <- x - min(x) < 2
+        wins/sum(wins)
+    }))
+    
+    ainfo <- as.data.frame(t(sim.aic[i+1, c('actualDist', 'pars', 'prop'), ]))
+    
+    out <- cbind(ainfo, awin)
+    colnames(out) <- c(colnames(out)[1:3], c('fishWin', 'plnormWin', 'stickWin', 'tnegbWin'))
+    
+    return(out)
+})
+
+aic.sum <- do.call(rbind, aic.sum)
+aic.sum <- aggregate(aic.sum[, c('fishWin', 'plnormWin', 'stickWin', 'tnegbWin')], aic.sum[, c('actualDist', 'pars', 'prop')], sum)
+
+
+## plot AIC
+par(mfcol=c(4, 4), mar=rep(0.5, 4), oma=c(3, 3, 2, 2)+0.1, mgp=c(1, 0.1, 0))
+
+for(mod in as.character(unique(aic.sum$actualDist))) {
+    for(pr in as.character(unique(aic.sum$prop))) {
+        if(pr == '1') names.arg <- 1:4
+        else names.arg <- rep(NA, 4)
+        
+        barplot(t(as.matrix(aic.sum[aic.sum$actualDist==mod & aic.sum$prop==pr, 4:7])),
+                col=(cols), axes=FALSE, names.arg=names.arg, 
+                space=0, xaxs='i')
+        box()
+        
+        if(pr == '0.35') mtext(switch(mod, 'fish'='Logseries',
+                                      'plnorm'='Pois LogNorm',
+                                      'stick'='Broken Stick',
+                                      'tnegb'='Trunc NegBin'), 
+                               side=3, line=1, cex=0.8, col=cols[mod])
+        
+        if(mod=='tnegb') mtext(pr, side=4, line=1)
+    }
+}
+
+mtext('Different parameterizations', side=1, line=1.5, outer=TRUE)
+mtext('Proportion model support', side=2, line=1, outer=TRUE)
 
