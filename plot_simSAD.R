@@ -144,3 +144,58 @@ mtext('Different parameterizations', side=1, line=1.5, outer=TRUE)
 mtext('Relative model support', side=2, line=1, outer=TRUE)
 
 dev.off()
+
+
+## ===============================
+## plot Z-value simulation results
+## ===============================
+
+getZ <- function(stat, porz) {
+    stat <- paste(porz, stat, sep='_')
+    these <- sim[, 1, 1] == stat & !is.na(sim[, 'value', 1])
+    stat.sim <- sim[these, 'value', ]
+    samedist <- sim[these, 'fittedDist', 1] == sim[these, 'actualDist', 1]
+    out <- list(right=NULL, wrong=NULL)
+    out$right <- as.numeric(stat.sim[samedist, ])
+    out$wrong <- as.numeric(stat.sim[!samedist, ])
+    
+    return(out)
+}
+
+zll <- getZ('cdfMSErel', 'z')
+
+plot(density(log(zll$right)))
+lines(density(log(zll$wrong)))
+
+
+bla <- as.data.frame(sim[1:(15*4), , 1])
+bla <- dcast(as.data.frame(sim[, , 1]), fittedDist + actualDist + pars + prop + nspp ~ stat)
+head(bla)
+
+sim2 <- lapply(sim.out, function(x) {
+    out <- melt(x)
+    colnames(out) <- c('stat', 'fittedDist', 'value', 'pars', 'actualDist', 'prop', 'nspp')
+    out$pars <- pars[paste(out$actualDist, out$pars, sep='')]
+    out$prop <- prop[out$prop]
+    out$nspp <- nspp[out$nspp]
+    out$stat <- as.character(out$stat)
+    out$fittedDist <- as.character(out$fittedDist)
+    
+    return(dcast(out, actualDist + pars + prop + nspp + fittedDist ~ stat))
+})
+
+sim2 <- do.call(rbind, sim2)
+
+## make summary of z score have deltaAIC (first )
+z.sum <- sim2
+for(i in seq(0, nrow(z.sum)-1, by=4)) {
+    df <- z.sum[i + 1:4, ]
+    refAIC <- df$aic[df$fittedDist == df$actualDist]
+    z.sum$aic[i + 1:4] <- z.sum$aic[i + 1:4] - refAIC
+}
+z.sum <- z.sum[!is.na(z.sum$z_ll), ]
+
+plot(z.sum[z.sum$actualDist!='tnegb' & z.sum$fittedDist=='tnegb', c('aic', 'z_radMSE')])
+
+
+plot(z.sum[z.sum$actualDist!='plnorm' & z.sum$fittedDist=='plnorm', c('aic', 'z_radMSE')])
