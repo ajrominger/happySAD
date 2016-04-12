@@ -40,9 +40,9 @@ for(i in 1:4) {
              col=cols[mod], lwd=2)
         if(i == 1) logAxis(2)
         if(j == 1) mtext(switch(mod, 'fish'='Logseries',
-                                'plnorm'='Pois LogNorm',
-                                'stick'='Broken Stick',
-                                'tnegb'='Trunc NegBin'), 
+                                'plnorm'='PoisLogNorm',
+                                'stick'='BrokenStick',
+                                'tnegb'='TruncNegBin'), 
                          side=3, line=1, cex=0.8, col=cols[mod])
     }
 }
@@ -131,9 +131,9 @@ for(mod in as.character(unique(aic.sum$actualDist))) {
         box()
         
         if(pr == '0.35') mtext(switch(mod, 'fish'='Logseries',
-                                      'plnorm'='Pois LogNorm',
-                                      'stick'='Broken Stick',
-                                      'tnegb'='Trunc NegBin'), 
+                                      'plnorm'='PoisLogNorm',
+                                      'stick'='BrokenStick',
+                                      'tnegb'='TruncNegBin'), 
                                side=3, line=1, cex=0.8, col=cols[mod])
         
         if(mod=='tnegb') mtext(pr, side=4, line=1)
