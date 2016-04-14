@@ -59,17 +59,25 @@ names(sad.rfun) <- names(sad.par)
 simSAD <- function(funs, nspp, prop) {
     rapply(funs, how='replace', f=function(f) {
         ## simulate data
-        dat <- try(sample.sad(f(nspp), prob=prop))
-        if(class(dat) == 'try-error') browser()
-        
+        #dat <- try(sample.sad(f(nspp), prob=prop))
+        dat <- sample.sad(f(nspp), prob=prop)
+        #if(class(dat) == 'try-error') {
+        #return(matrix(1, nrow=3, ncol=4))
+        #} else {
         ## fit SAD models and extract AIC
+        #fit <- try(fitSAD(dat, c('fish', 'plnorm', 'stick', 'tnegb'), keepData=FALSE))
         fit <- fitSAD(dat, c('fish', 'plnorm', 'stick', 'tnegb'), keepData=FALSE)
+        #if(class(fit) == 'try-error') {
+        #return(matrix(2, nrow=3, ncol=4))
+        #} else {
         aic <- sapply(fit, AIC)
         aicWin <- aic - min(aic) <= 2
         aicWin <- aicWin/sum(aicWin)
         daic <- aic - aic[attr(f, 'model')]
         
         return(rbind(aic=aic, aicWin=aicWin, daic=daic))
+        #}
+        #}
     }) 
 }
 
@@ -77,9 +85,9 @@ simSAD <- function(funs, nspp, prop) {
 ## run simulation
 ## ==============
 
-nsim <- 300
-sim.out.aic <- mclapply(1:nsim, mc.cores=3, FUN=function(n) {
-    print(n)
+nsim <- 8
+sim.out.aic <- mclapply(1:nsim, mc.cores=4, FUN=function(n) {
+    cat(n, 'newNew', '\n')
     lapply(nspp, function(ns) {
         lapply(prop, function(p) {
             simSAD(sad.rfun, ns, p)
@@ -89,4 +97,4 @@ sim.out.aic <- mclapply(1:nsim, mc.cores=3, FUN=function(n) {
 
 
 ## save simulation output
-save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file='sim_out_aic2.RData')
+# save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file='sim_out_aic2.RData')
