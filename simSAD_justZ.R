@@ -17,7 +17,7 @@ sim.outZ <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
     print(i)
     
     dat <- rtnegb(100, 8, 5)
-    fit <- fitSAD(dat, c('tpois', 'tnegb'))
+    fit <- fitSAD(dat, c('plnorm', 'tnegb'))
 
     
     fit.stats <- sapply(fit, function(x) {
@@ -40,9 +40,9 @@ sim.outZ <- mclapply(1:nsim, mc.cores=3, FUN=function(i) {
             
             c(ll=sum(newdfun(r, log=TRUE)), 
               radMSE=mean(radE^2), radMSElog=mean(radElog^2), 
-              radMSErel=mean((radE/r)^2), # radMSElogrel=mean((radElog/log(r))^2),
+              radMSErel=mean((radE/r)^2),
               cdfMSE=mean(cdfE^2), cdfMSElog=mean(cdfElog^2), 
-              cdfMSErel=mean((cdfE/predCDF(obsCDF[, 1]))^2) #, cdfMSElogrel=mean((cdfElog/log(predCDF(obsCDF[, 1])))^2)
+              cdfMSErel=mean((cdfE/predCDF(obsCDF[, 1]))^2)
             )
         }
         
