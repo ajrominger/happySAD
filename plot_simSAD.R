@@ -186,16 +186,57 @@ sim2 <- lapply(sim.out, function(x) {
 
 sim2 <- do.call(rbind, sim2)
 
-## make summary of z score have deltaAIC (first )
+## make summary of z score have deltaAIC 
 z.sum <- sim2
 for(i in seq(0, nrow(z.sum)-1, by=4)) {
     df <- z.sum[i + 1:4, ]
     refAIC <- df$aic[df$fittedDist == df$actualDist]
     z.sum$aic[i + 1:4] <- z.sum$aic[i + 1:4] - refAIC
+    if(any(z.sum$aic[i+1:4] < 0)) z.sum$aic[i + 1:4] <- rep(NA, 4)
 }
-z.sum <- z.sum[!is.na(z.sum$z_ll), ]
 
-plot(z.sum[z.sum$actualDist!='tnegb' & z.sum$fittedDist=='tnegb', c('aic', 'z_radMSE')])
 
+
+plot(density(z.sum[z.sum$actualDist != z.sum$fittedDist, 'aic']))
+
+plot(z.sum[z.sum$actualDist!='tnegb' & z.sum$fittedDist=='tnegb', c('aic', 'z_radMSE')], col='red', log='y')
+points(z.sum[z.sum$actualDist=='tnegb' & z.sum$fittedDist=='tnegb', c('aic', 'z_radMSE')])
 
 plot(z.sum[z.sum$actualDist!='plnorm' & z.sum$fittedDist=='plnorm', c('aic', 'z_radMSE')])
+
+
+plot(density(log(z.sum[z.sum$actualDist=='tnegb' & z.sum$fittedDist=='tnegb', 'z_radMSE'])))
+
+
+
+x <- rplnorm(300, 0, 1.5)
+plot(sort(x, TRUE), log='y')
+tnegbfit <- sad(x, 'tnegb', keepData=TRUE)
+plnormfit <- sad(x, 'plnorm', keepData=TRUE)
+stickfit <- sad(x, 'stick', keepData=TRUE)
+lines(sad2Rank(tnegbfit))
+lines(sad2Rank(plnormfit), col='red')
+
+pz <- mseZ(plnormfit, nrep=1000, return.sim=TRUE, rel=TRUE)
+tz <- mseZ(tnegbfit, nrep=1000, return.sim=TRUE, rel=TRUE)
+sz <- mseZ(stickfit, nrep=1000, return.sim=TRUE, rel=TRUE)
+
+pz <- logLikZ(plnormfit, nrep=1000, return.sim=TRUE)
+tz <- logLikZ(tnegbfit, nrep=1000, return.sim=TRUE)
+sz <- logLikZ(stickfit, nrep=1000, return.sim=TRUE)
+plot(density(log(pz$sim)))
+lines(density(log(tz$sim)))
+lines(density(log(sz$sim)))
+
+
+
+
+bla <- z.sum[z.sum$aic < 0, 1:6]
+nrow(bla)
+aggregate(list(aic=bla$aic), bla[, c('actualDist', 'fittedDist', 'pars')], min)
+
+x <- replicate(100, {
+    r <- rplnorm(140, 2, 0.3)
+    fit <-  fitSAD(r, c('plnorm', 'tnegb'))
+    if(fit[[2]]$ll - fit[[1]]$ll < -20) browser()
+})
