@@ -39,10 +39,13 @@ sad.par <- list(fish=10^seq(-1.25, -2, length=4),
 sad.rfun <- lapply(names(sad.par), function(f) {
     lapply(1:4, function(p) {
         if(f %in% c('plnorm', 'tnegb')) {
-            return(function(n) get(sprintf('r%s', f))(n, sad.par[[f]][[p]][1], sad.par[[f]][[p]][2]))
+            out <- function(n) get(sprintf('r%s', f))(n, sad.par[[f]][[p]][1], sad.par[[f]][[p]][2])
         } else {
-            return(function(n) get(sprintf('r%s', f))(n, sad.par[[f]][p]))
+            out <- function(n) get(sprintf('r%s', f))(n, sad.par[[f]][p])
         }
+        
+        attr(out, 'model') <- f
+        out
     })
 })
 
@@ -53,14 +56,20 @@ names(sad.rfun) <- names(sad.par)
 ## function to run one simulation
 ## ==============================
 
-simSAD <- function(rfuns, nspp, prop) {
-    rapply(rfuns, how='replace', f=function(f) {
+simSAD <- function(funs, nspp, prop) {
+    rapply(funs, how='replace', f=function(f) {
         ## simulate data
-        dat <- sample.sad(f(nspp), prob=prop)
+        dat <- try(sample.sad(f(nspp), prob=prop))
+        if(class(dat) == 'try-error') browser()
         
         ## fit SAD models and extract AIC
         fit <- fitSAD(dat, c('fish', 'plnorm', 'stick', 'tnegb'), keepData=FALSE)
-        return(sapply(fit, AIC))
+        aic <- sapply(fit, AIC)
+        aicWin <- aic - min(aic) <= 2
+        aicWin <- aicWin/sum(aicWin)
+        daic <- aic - aic[attr(f, 'model')]
+        
+        return(rbind(aic=aic, aicWin=aicWin, daic=daic))
     }) 
 }
 
@@ -68,8 +77,8 @@ simSAD <- function(rfuns, nspp, prop) {
 ## run simulation
 ## ==============
 
-nsim <- 500
-sim.out.aic <- mclapply(1:nsim, mc.cores=16, FUN=function(n) {
+nsim <- 300
+sim.out.aic <- mclapply(1:nsim, mc.cores=3, FUN=function(n) {
     print(n)
     lapply(nspp, function(ns) {
         lapply(prop, function(p) {
@@ -78,5 +87,6 @@ sim.out.aic <- mclapply(1:nsim, mc.cores=16, FUN=function(n) {
     })
 })
 
+
 ## save simulation output
-save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file='sim_out_aic.RData')
+save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file='sim_out_aic2.RData')
