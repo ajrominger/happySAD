@@ -85,9 +85,9 @@ simSAD <- function(funs, nspp, prop) {
 ## run simulation
 ## ==============
 
-nsim <- 8
-sim.out.aic <- mclapply(1:nsim, mc.cores=4, FUN=function(n) {
-    cat(n, 'newNew', '\n')
+nsim <- 500
+sim.out.aic <- mclapply(1:nsim, mc.cores=6, FUN=function(n) {
+    cat(n, '\n')
     lapply(nspp, function(ns) {
         lapply(prop, function(p) {
             simSAD(sad.rfun, ns, p)
@@ -97,4 +97,4 @@ sim.out.aic <- mclapply(1:nsim, mc.cores=4, FUN=function(n) {
 
 
 ## save simulation output
-# save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file='sim_out_aic2.RData')
+save(sim.out.aic, nspp, prop, sad.par, sad.rfun, file=sprintf('sim_out_aic_%s.RData', Sys.info()['nodename']))
