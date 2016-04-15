@@ -86,7 +86,13 @@ simSAD <- function(funs, nspp, prop) {
 ## ==============
 
 nsim <- 500
-sim.out.aic <- mclapply(1:nsim, mc.cores=6, FUN=function(n) {
+if(Sys.info()['nodename'] == 'voldemort') {
+    mc <- 12
+} else {
+    mc <- 6
+}
+
+sim.out.aic <- mclapply(1:nsim, mc.cores=mc, FUN=function(n) {
     cat(n, '\n')
     lapply(nspp, function(ns) {
         lapply(prop, function(p) {
