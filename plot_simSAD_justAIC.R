@@ -49,3 +49,42 @@ mtext('Different parameterizations', side=1, line=1.5, outer=TRUE)
 mtext('Relative model support', side=2, line=1, outer=TRUE)
 
 dev.off()
+
+
+
+## plot deltaAIC
+mods <- as.character(unique(aicWin$actualDist))
+
+# pdf('ms/fig/fig_daic.pdf', width=4, height=4)
+par(mfcol=c(4, 4), mar=c(0.1, 0.5, 0.1, 0.5), oma=c(3, 3, 2, 2)+0.1, mgp=c(1, 0.75, 0))
+
+for(a in mods) {
+    for(pr in 1:4) {
+        if(a == 'tnegb') {
+            plot(density(aic.sim[aic.sim$actualDist == a & aic.sim$prop==pr & aic.sim$fittedDist == 'plnorm', 'daic']), 
+                 col=cols['plnorm'], yaxt='n', xaxt='n', main='', xlim=c(-10, 30), lwd=3, 
+                 panel.first=rect(par('usr')[1], par('usr')[3], 2, par('usr')[4], col='gray', border=NA))
+            mtext(prop[pr], side=4, line=1)
+        } else {
+            if(a %in% c('fish', 'stick')) xlim <- c(-1, 2.5)
+            else xlim <- c(-10, 30)
+            plot(density(aic.sim[aic.sim$actualDist == a & aic.sim$prop==pr & aic.sim$fittedDist == 'tnegb', 'daic']), 
+                 col=cols['tnegb'], yaxt='n', xaxt='n', main='', xlim=xlim, lwd=3, 
+                 panel.first=rect(par('usr')[1], par('usr')[3], 2, par('usr')[4], col='gray', border=NA))
+        }
+        
+        abline(v=0, col=cols[a], lwd=2)
+        
+        if(pr == 1) mtext(switch(a, 'fish'='Logseries',
+                                 'plnorm'='PoisLogNorm',
+                                 'stick'='BrokenStick',
+                                 'tnegb'='TruncNegBin'), 
+                          side=3, line=1, cex=0.8, col=cols[a])
+        if(pr == 4) axis(1)
+    }
+}
+
+mtext(expression(Delta*'AIC'), side=1, line=2, outer=TRUE)
+mtext('Relative density', side=2, line=1, outer=TRUE)
+
+# dev.off()
