@@ -16,3 +16,36 @@ aic.sim <- melt(sim.aic)
 colnames(aic.sim) <- c('stat', 'fittedDist', 'value', 'pars', 'actualDist', 'prop', 'nspp', 'rep')
 aic.sim <- dcast(aic.sim, actualDist + pars + fittedDist + nspp + prop + rep ~ stat, value.var='value')
 
+
+## plot aic wins
+aicWin <- with(aic.sim, aggregate(list(aicWin=aicWin), aic.sim[, c('actualDist', 'pars', 'prop', 'fittedDist')], sum))
+aicWin <- dcast(aicWin, actualDist + pars + prop ~ fittedDist, value.var='aicWin')
+dim(aicWin)
+
+pdf('ms/fig/fig_aic.pdf', width=4, height=4)
+par(mfcol=c(4, 4), mar=rep(0.5, 4), oma=c(3, 3, 2, 2)+0.1, mgp=c(1, 0.1, 0))
+
+for(mod in as.character(unique(aicWin$actualDist))) {
+    for(pr in 1:4) {
+        if(pr == 4) names.arg <- 1:4
+        else names.arg <- rep(NA, 4)
+        
+        barplot(t(as.matrix(aicWin[aicWin$actualDist==mod & aicWin$prop==pr, 4:7])),
+                col=(cols), axes=FALSE, names.arg=names.arg, 
+                space=0, xaxs='i')
+        box()
+        
+        if(pr == 1) mtext(switch(mod, 'fish'='Logseries',
+                                 'plnorm'='PoisLogNorm',
+                                 'stick'='BrokenStick',
+                                 'tnegb'='TruncNegBin'), 
+                          side=3, line=1, cex=0.8, col=cols[mod])
+        
+        if(mod=='tnegb') mtext(prop[pr], side=4, line=1)
+    }
+}
+
+mtext('Different parameterizations', side=1, line=1.5, outer=TRUE)
+mtext('Relative model support', side=2, line=1, outer=TRUE)
+
+dev.off()
