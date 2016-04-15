@@ -55,7 +55,7 @@ dev.off()
 ## plot deltaAIC
 mods <- as.character(unique(aicWin$actualDist))
 
-# pdf('ms/fig/fig_daic.pdf', width=4, height=4)
+pdf('ms/fig/fig_daic.pdf', width=4, height=4)
 par(mfcol=c(4, 4), mar=c(0.1, 0.5, 0.1, 0.5), oma=c(3, 3, 2, 2)+0.1, mgp=c(1, 0.75, 0))
 
 for(a in mods) {
@@ -87,4 +87,4 @@ for(a in mods) {
 mtext(expression(Delta*'AIC'), side=1, line=2, outer=TRUE)
 mtext('Relative density', side=2, line=1, outer=TRUE)
 
-# dev.off()
+dev.off()
