@@ -65,9 +65,15 @@ for(a in mods) {
                  col=cols['plnorm'], yaxt='n', xaxt='n', main='', xlim=c(-10, 30), lwd=3, 
                  panel.first=rect(par('usr')[1], par('usr')[3], 2, par('usr')[4], col='gray', border=NA))
             mtext(prop[pr], side=4, line=1)
+            aat <- c(-10, 10, 30)
         } else {
-            if(a %in% c('fish', 'stick')) xlim <- c(-1, 2.5)
-            else xlim <- c(-10, 30)
+            if(a %in% c('fish', 'stick')) {
+                xlim <- c(-1, 2.5)
+                aat <- c(0, 1, 2)
+            } else {
+                xlim <- c(-10, 30)
+                aat <- c(-10, 10, 30)
+            }
             plot(density(aic.sim[aic.sim$actualDist == a & aic.sim$prop==pr & aic.sim$fittedDist == 'tnegb', 'daic']), 
                  col=cols['tnegb'], yaxt='n', xaxt='n', main='', xlim=xlim, lwd=3, 
                  panel.first=rect(par('usr')[1], par('usr')[3], 2, par('usr')[4], col='gray', border=NA))
@@ -80,7 +86,7 @@ for(a in mods) {
                                  'stick'='BrokenStick',
                                  'tnegb'='TruncNegBin'), 
                           side=3, line=1, cex=0.8, col=cols[a])
-        if(pr == 4) axis(1)
+        if(pr == 4) axis(1, at=aat)
     }
 }
 
