@@ -3,6 +3,10 @@ setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
 library(reshape2)
 
+## standarize colors for models
+cols <- hsv(c(0.52, 0.02, 0.12, 0.65), c(0.8, 0.7, 0.8, 0.7), c(0.8, 0.75, 0.9, 0.6))
+names(cols) <- c('fish', 'plnorm', 'stick', 'tnegb')
+
 ## read in files
 files <- list.files('.', pattern='sim_out_aic')
 sim.aic <- c()
