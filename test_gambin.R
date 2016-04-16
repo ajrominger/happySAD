@@ -23,9 +23,9 @@ unbin <- function(bins, freq) {
 }
 
 ## fit the binned fisher log series
-fitBinFish <- function(x) {
+fitBinFish <- function(x, init) {
     fun <- function(b) -sum(dBinFish(x, b, log=TRUE))
-    out <- optimize(fun, interval=c(.Machine$double.eps, 30))
+    out <- optimize(fun, interval=c(10^-5, 3*init))
     out <- c(out[[1]], out[[2]])
     names(out) <- c('MLE', 'll')
     out[2] <- -out[2]
@@ -35,18 +35,30 @@ fitBinFish <- function(x) {
 
 
 ## set-up simulation
-bs <- 10^(-4:0)
-lapply(bs, function(b) {
+bs <- 10^seq(-3.25, 0, length=5)
+
+gb.sim <- lapply(bs, function(b) {
     ## simulate from fisher
-    r <- rfish(100, 0.1)
+    r <- rfish(100, b)
+    r <- r[is.finite(r)]
     
-    ## fit gambin and extract info
+    ## fit gambin
     gbfit <- fitGambin(r)
     
+    gbout <- c(gbfit$Alpha, gbfit$logLik)
+    names(gbout) <- c('MLE', 'll')
+    
     ## fit fisher to raw
-    sum(dBinFish(r, 0.1, log=TRUE))
+    ffit <- sad(r, 'fish')
+    fout <- c(ffit$MLE, ffit$ll)
+    names(fout) <- c('MLE', 'll')
+    bfrout <- fout
+    bfrout[2] <- sum(dBinFish(r, fout[1], log=TRUE))
     
     ## fit binned fisher
+    bfout <- fitBinFish(r, init=ffit$MLE)
+    
+    return(rbind(gambin=gbout, fish=fout, rawBinFish=bfrout, binFish=bfout))
 })
 
 fitBinFish(r)
