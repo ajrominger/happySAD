@@ -1,6 +1,7 @@
 setwd('~/Dropbox/Research/happySAD')
 devtools::load_all('../pika')
 library(gambin)
+library(parallel)
 
 ## funciton to calculate probabilities for binned fisher log series from raw data
 dBinFish <- function(x, beta, log=FALSE) {
@@ -35,44 +36,38 @@ fitBinFish <- function(x, init) {
 
 
 ## set-up simulation
-bs <- 10^seq(-3.25, 0, length=5)
+bs <- 10^seq(-3.5, 0, length=5)
+nsim <- 500
 
 gb.sim <- lapply(bs, function(b) {
-    ## simulate from fisher
-    r <- rfish(100, b)
-    r <- r[is.finite(r)]
+    sim.out <- mclapply(1:nsim, mc.cores=6, FUN=function(i) {
+        ## simulate from fisher
+        r <- rfish(100, b)
+        r <- r[is.finite(r)]
+        
+        ## fit gambin
+        gbfit <- fitGambin(r)
+        
+        gbout <- c(gbfit$Alpha, gbfit$logLik)
+        names(gbout) <- c('MLE', 'll')
+        
+        ## fit fisher to raw
+        ffit <- sad(r, 'fish')
+        fout <- c(ffit$MLE, ffit$ll)
+        names(fout) <- c('MLE', 'll')
+        bfrout <- fout
+        bfrout[2] <- sum(dBinFish(r, fout[1], log=TRUE))
+        
+        ## fit binned fisher
+        bfout <- fitBinFish(r, init=ffit$MLE)
+        
+        out <- cbind(iter=i, truPar=b, rbind(gambin=gbout, fish=fout, rawBinFish=bfrout, binFish=bfout))
+        return(out)
+    })
     
-    ## fit gambin
-    gbfit <- fitGambin(r)
-    
-    gbout <- c(gbfit$Alpha, gbfit$logLik)
-    names(gbout) <- c('MLE', 'll')
-    
-    ## fit fisher to raw
-    ffit <- sad(r, 'fish')
-    fout <- c(ffit$MLE, ffit$ll)
-    names(fout) <- c('MLE', 'll')
-    bfrout <- fout
-    bfrout[2] <- sum(dBinFish(r, fout[1], log=TRUE))
-    
-    ## fit binned fisher
-    bfout <- fitBinFish(r, init=ffit$MLE)
-    
-    return(rbind(gambin=gbout, fish=fout, rawBinFish=bfrout, binFish=bfout))
+    do.call(rbind, sim.out)
 })
 
-fitBinFish(r)
-sad(r, 'fish')
+gb.sim <- do.call(rbind, gb.sim)
 
-
-
-
-bla <- gambin_exp(7.1, 11, 100)
-ubla <- unbin((1:length(bla)) - 1, bla)
-ublaf <- sad(ubla, 'fish')
-
-logLik(fitGambin(ubla))
-dgambin
-
-plot(dBinFish(2^((1:length(bla)) - 1), ublaf$MLE))
-points(dgambin(7.1, 11))
+save(gb.sim, file='gambin_sim.RData')
