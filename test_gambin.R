@@ -37,35 +37,46 @@ fitBinFish <- function(x, init) {
 
 ## set-up simulation
 bs <- 10^seq(-3.5, 0, length=5)
-nsim <- 500
+ns <- 10^seq(1.95, 2.7, length=4)
+ns <- ns - ns %% 20
+nsim <- 6
 
-gb.sim <- lapply(bs, function(b) {
-    sim.out <- mclapply(1:nsim, mc.cores=6, FUN=function(i) {
-        ## simulate from fisher
-        r <- rfish(100, b)
-        r <- r[is.finite(r)]
+gb.sim <- lapply(ns, function(n) {
+    b.out <- lapply(bs, function(b) {
+        sim.out <- mclapply(1:nsim, mc.cores=6, FUN=function(i) {
+            ## simulate from fisher
+            r <- rfish(n, b)
+            r <- r[is.finite(r)]
+            
+            ## fit gambin
+            gbfit <- fitGambin(r)
+            
+            gbout <- c(gbfit$Alpha, gbfit$logLik)
+            names(gbout) <- c('MLE', 'll')
+            
+            ## fit fisher to raw
+            ffit <- sad(r, 'fish')
+            fout <- c(ffit$MLE, ffit$ll)
+            names(fout) <- c('MLE', 'll')
+            bfrout <- fout
+            bfrout[2] <- sum(dBinFish(r, fout[1], log=TRUE))
+            
+            ## fit tnegb to raw
+            tnbfit <- sad(r, 'tnegb')
+            tnbout <- c(tnbfit$MLE[2], tnbfit$ll)
+            names(tnbout) <- c('MLE', 'll')
+            
+            ## fit binned fisher
+            bfout <- fitBinFish(r, init=ffit$MLE)
+            
+            out <- cbind(iter=i, nspp=n, truPar=b, rbind(gambin=gbout, fish=fout, rawBinFish=bfrout, binFish=bfout, tnegb=tnbout))
+            return(out)
+        })
         
-        ## fit gambin
-        gbfit <- fitGambin(r)
-        
-        gbout <- c(gbfit$Alpha, gbfit$logLik)
-        names(gbout) <- c('MLE', 'll')
-        
-        ## fit fisher to raw
-        ffit <- sad(r, 'fish')
-        fout <- c(ffit$MLE, ffit$ll)
-        names(fout) <- c('MLE', 'll')
-        bfrout <- fout
-        bfrout[2] <- sum(dBinFish(r, fout[1], log=TRUE))
-        
-        ## fit binned fisher
-        bfout <- fitBinFish(r, init=ffit$MLE)
-        
-        out <- cbind(iter=i, truPar=b, rbind(gambin=gbout, fish=fout, rawBinFish=bfrout, binFish=bfout))
-        return(out)
+        do.call(rbind, sim.out)
     })
     
-    do.call(rbind, sim.out)
+    do.call(rbind, b.out)
 })
 
 gb.sim <- do.call(rbind, gb.sim)
