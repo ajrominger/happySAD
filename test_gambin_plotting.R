@@ -11,3 +11,7 @@ llComp <- with(gb.sim[gb.sim$model != 'fish', ], aggregate(list(ll=ll),
                                                            function(x) c(mean=mean(x), sd=sd(x))))
 
 plot(llComp$truPar, llComp$ll[, 'mean'], log='x')
+
+with(gb.sim[gb.sim$model=='binFish', ], plot(truPar, MLE, log='xy'))
+with(gb.sim[gb.sim$model=='fish', ], points(truPar, MLE, col='red'))
+abline(0, 1)
