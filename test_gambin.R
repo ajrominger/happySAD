@@ -39,7 +39,7 @@ fitBinFish <- function(x, init) {
 bs <- 10^seq(-3.5, 0, length=5)
 ns <- 10^seq(1.95, 2.7, length=4)
 ns <- ns - ns %% 20
-nsim <- 6
+nsim <- 500
 
 gb.sim <- lapply(ns, function(n) {
     b.out <- lapply(bs, function(b) {
