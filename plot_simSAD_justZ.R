@@ -60,6 +60,7 @@ for(i in seq(2, 14, by=2)) {
     plot(simZ[1, 1, ] - simZ[1, 2, ], simZ[i, 1, ], ylim=range(simZ[seq(2, 14, by=2), 1, ]))
 }
 
+dev.off()
 
 for(i in seq(2, 14, by=2)) {
     plot(simZ[1, 1, ] - simZ[1, 2, ], simZ[i, 1, ])
