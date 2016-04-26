@@ -25,6 +25,7 @@ lines(density(simZ[1, 2, ]), col='red')
 ## plot densities of p and z vals
 ## ==============================
 
+pdf(file='ms/fig/fig_pValZVal.pdf', width=5, height=5)
 par(mfcol=c(7, 2), mar=rep(0.1, 4), oma=c(4, 4, 1, 1)+0.1)
 
 ## plot p-vals
@@ -40,11 +41,13 @@ for(i in seq(2, 14, by=2)) {
     lines(density(log(simZ[i, 2, ])), col='red')
 }
 
+dev.off()
 
 ## ============================================
 ## plot correlation of p and z vals to deltaAIC
 ## ============================================
 
+pdf(file='ms/fig/fig_pValZValCorAIC.pdf', width=5, height=5)
 par(mfcol=c(7, 2), mar=rep(0.1, 4), oma=c(4, 4, 1, 1)+0.1)
 
 ## plot p-vals
