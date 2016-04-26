@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{natbib}
+
+\title{How to be happy when your data are SAD}
+
+\author{Andrew J. Rominger, John Harte}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\begin{enumerate}
+\item SAD long standing in ecology
+\item Any useful thoery of biodiversity, in addition to whatever other patterns it may predict, should make
+meaningful and accurate predictions of the SAD. 
+\item Here I
+\begin{enumerate}
+\item briefly summarize the most relevant SAD theories, laying to rest
+several irrelevant theories
+\item present a set of best statistical practices for SAD testing,
+clarifying misconceptions such as the veil-line
+\item explore the future of SAD theories, including the exciting
+universality and utility of the negative binomial distribution
+\end{enumerate}
+\end{enumerate}
+
+
+\subsection{A SAD history}
+\begin{enumerate}
+\item Review of theories predicting SADs: 
+  \begin{enumerate}
+  \item broken stick
+  \item negative binomial
+  \item log series
+  \item log normal
+  \item zipf
+  \item neutral theory
+  \item mechanismless theory
+  \end{enumerate}
+\item mathematical connections between theories
+\end{enumerate}
+
+\subsection{Bad SAD theories}
+\begin{enumerate}
+\item The log-normal is not valid and not useful
+\item The Gambin model is also not valid nor well supported
+\end{enumerate}
+
+\subsection{SAD theories for the future}
+Return to Fisher's formulation and Preston's ergodic hypothesis
+
+
+\section{SAD subsamples and mixtures}
+
+\begin{enumerate}
+\item SADs are sampled by indiviudal not by species. 
+\item The veil line arrises by inappropriately sampling by species.
+\item SADs have a discrete spatio-temporal extent. This is arbitrary but
+important: The log normal shape arrises by mixing samples
+(i.e. multiple years of moth trapping, combining distinct spatial
+samples)
+\item How SADs scale is another issue and an interesting topic on inquery.
+The fact that there is scale depenence in SADs doesn't negate the fact
+that sampling them must be viewed as discrete in space, time and
+taxonomy.
+\end{enumerate}
+
+
+\section{Best and worst statistical practices for comparing
+  theoretical and emperical SADs}
+
+Do not bin data. Deal with subsampling appropriately
+
+\subsection{Comparing theory to data}
+\begin{enumerate}
+\item connection between PMF, CDF, RAD
+\item comparison of goodness of fit methods
+\item a note on hierarchical models and how commonly used normal
+  hyperdistribuitons with log and logit link functions might nearly
+  always be wrong
+\end{enumerate}
+
+\section{Biological and statistical limits to interpreting SADs}
+\begin{enumerate}
+\item How small a sample is too small?
+\item Can we distinguish log normal hyperdistributions from Gamma
+hyperdistributions?
+\item Recent mechanismless theory says SADs might just be statistical
+outcome, so how much should we really infer from them?
+\end{enumerate}
+
+\end{document}
