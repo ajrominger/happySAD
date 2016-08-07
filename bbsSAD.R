@@ -2,13 +2,18 @@
 # devtools::load_all('../pika') 
 setwd('~/Dropbox/Research/pika/R')
 sapply(list.files(), source)
-devtools::load_all('~/Dropbox/Research/socorro') 
+devtools::load_all('~/Dropbox/Research/socorro')
+library(plyr)
 
 setwd('~/Dropbox/Research/happySAD')
 
 ## read BBS
 bbsYear <- 2009
 bbs <- read.csv(sprintf('~/Research/datasets/bbs/db/bbs%s.csv', bbsYear), as.is = TRUE)
+
+## read BBS info
+bbsInfo <- read.csv('~/Research/datasets/bbs/db/bbsRouteInfo.csv', as.is = TRUE)
+
 
 ## make a quick plot for ESA presentation
 this.sad <- sad(bbs$abund[bbs$route==unique(bbs$route)[2]], 'tnegb', keepData = TRUE)
@@ -25,18 +30,17 @@ lines(sad2Rank(this.sad), lwd = 2, col = hsv(0, 0.7, 0.9))
 
 dev.off()
 
-x <- lapply(unique(bbs$route)[1:2], function(r) {
-    fit <- fitSAD(bbs$abund[bbs$route == r], models = c('tnegb', 'fish'), keepData = TRUE)
+
+## ============================================
+## the real stuff: fitting all SADs to BBS data
+## ============================================
+
+bbsSAD <- ddply(bbs[bbs$route %in% unique(bbs$route)[1:10], ], 'route', function(x) {
+    fit <- fitSAD(x$abund, models = c('tnegb', 'fish'), keepData = TRUE)
     aic <- sapply(fit, AIC)
     z <- rep(NA, length(aic))
     z[1] <- logLikZ(fit$tnegb)$z
     
-    return(cbind(aic, dAIC=aic-min(aic), z))
+    return(data.frame(mod=names(fit), aic=aic, dAIC=aic-min(aic), z=z))
 })
 
-do.call(AIC, x[[1]])
-AIC(x[[1]][[1]])
-AIC(x[[1]][[2]])
-
-
-logLikZ(x[[2]][[1]])
