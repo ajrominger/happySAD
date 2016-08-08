@@ -1,8 +1,27 @@
-setwd('~/Dropbox/Research/pika/R')
-sapply(list.files(), source)
-devtools::load_all('~/Dropbox/Research/socorro')
-
 setwd('~/Dropbox/Research/happySAD/ms/esa2016/figs')
+devtools::load_all('../../../../pika') 
+devtools::load_all('../../../../socorro')
+
+
+## BBS example
+bbsYear <- 2009
+bbs <- read.csv(sprintf('~/Research/datasets/bbs/db/bbs%s.csv', bbsYear), as.is = TRUE)
+this.sad <- sad(bbs$abund[bbs$route==unique(bbs$route)[2]], 'tnegb', keepData = TRUE)
+
+pdf('ms/esa2016/figs/fig_eg-sad.pdf', width = 3, height = 3)
+par(mar=c(2, 2, 0, 0) + 0.1, mgp=c(1, 1, 0))
+
+plot(sort(this.sad$data, TRUE), log = 'y', axes = FALSE, 
+     xlab='Species', ylab='Abundance', ylim = c(1, 100))
+axis(1, at=c(0, 50), labels = NA)
+logAxis(2, labels = NA)
+
+lines(sad2Rank(this.sad), lwd = 2, col = hsv(0, 0.7, 0.9))
+
+dev.off()
+
+
+## negbinom example
 
 pdf('fig_negb.pdf', width = 6.5/1.5, height = 5/1.5)
 par(mar=c(3, 3, 0, 5) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
