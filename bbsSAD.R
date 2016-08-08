@@ -4,19 +4,16 @@ devtools::load_all('../socorro')
 library(plyr)
 
 
-
 ## read BBS
+
 bbsYear <- 2009
 bbs <- read.csv(sprintf('~/Research/datasets/bbs/db/bbs%s.csv', bbsYear), as.is = TRUE)
-
-## read BBS info
-bbsInfo <- read.csv('~/Research/datasets/bbs/db/bbsRouteInfo.csv', as.is = TRUE)
 
 
 ## fit all SADs to BBS data
 
-bbsSAD <- ddply(bbs[bbs$route %in% unique(bbs$route)[1:10], ], 'route', function(x) {
-    fit <- fitSAD(x$abund, models = c('tnegb', 'fish'), keepData = TRUE)
+bbsSAD <- ddply(bbs, 'route', function(x) {
+    fit <- fitSAD(x$abund, models = c('tnegb', 'plnorm', 'fish'), keepData = TRUE)
     aic <- sapply(fit, AIC)
     z <- rep(NA, length(aic))
     z[1] <- logLikZ(fit$tnegb)$z
@@ -24,3 +21,5 @@ bbsSAD <- ddply(bbs[bbs$route %in% unique(bbs$route)[1:10], ], 'route', function
     return(data.frame(mod=names(fit), aic=aic, dAIC=aic-min(aic), z=z))
 })
 
+## write output
+write.table(bbsSAD, file = 'bbsSAD.csv', sep = ',', row.names = FALSE)
