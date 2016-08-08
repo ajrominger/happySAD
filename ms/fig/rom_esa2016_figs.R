@@ -1,7 +1,8 @@
 setwd('~/Dropbox/Research/happySAD/ms/esa2016/figs')
 devtools::load_all('../../../../pika') 
 devtools::load_all('../../../../socorro')
-
+library(maps)
+library(mapdata)
 
 ## BBS example
 bbsYear <- 2009
@@ -19,6 +20,50 @@ logAxis(2, labels = NA)
 lines(sad2Rank(this.sad), lwd = 2, col = hsv(0, 0.7, 0.9))
 
 dev.off()
+
+## BBS map
+
+bbsInfo <- read.csv('~/Research/datasets/bbs/db/bbsRouteInfo.csv', as.is = TRUE)
+bbsSAD <- read.csv('../../../bbsSAD.csv', as.is = TRUE)
+bbsSAD <- cbind(bbsSAD, bbsInfo[match(bbsSAD$route, bbsInfo$route.id), c('Longi', 'Lati')])
+rownames(bbsSAD) <- NULL
+
+par(mar=rep(0.1, 4))
+map('world', c('usa', 'canada'), xlim = c(-180, -50), col=NA)
+map('world', c('canada', 'alaska'), add=TRUE, col='gray', fill=TRUE, border='gray')
+map('world', 'USA:alaska', add=TRUE, col='gray', fill=TRUE, border='gray')
+map('usa', add=TRUE, col='gray', fill=TRUE, border='gray')
+
+## function to return another function that maps a quantitative value to a color
+## after transformation by the function xfun
+colVal <- function(x, xfun, cols = hsv(c(0.55, 0.75), c(0.3, 0.8), c(1, 0.5))) {
+    cfun <- colorRamp(cols)
+    
+    newx <- xfun(x)
+    m <- 1 / diff(range(newx))
+    out <- 
+    
+    function(v) rgb(cfun(m * (xfun(v) - min(newx))), maxColorValue = 255)
+}
+
+with(bbsSAD[!is.na(bbsSAD$z), ], {
+    browser()
+    zfun <- colVal(z, function(x) -log(x))
+    plot(Longi, Lati, col=zfun(z), pch=16, cex=0.3)
+    pz <- pretty(range(z))
+    pz <- pz[pz > 0]
+    
+    plot(density(-log(z)), xaxt = 'n')
+    axis(1, at = -log(pz), labels = pz)
+})
+
+
+with(bbsSAD[!is.na(bbsSAD$z), ], {
+    bla <- colVal(z, function(x) -log(x))
+    plot(sort(z)[1:10], col=bla(sort(z)[1:10]), pch=16, cex=0.5, log='y')
+})
+
+points(bbsSAD$Longi, bbsSAD$Lati)
 
 
 ## lognorm and gamma examples
