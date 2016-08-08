@@ -21,6 +21,23 @@ lines(sad2Rank(this.sad), lwd = 2, col = hsv(0, 0.7, 0.9))
 dev.off()
 
 
+## lognorm and gamma examples
+pdf('fig_lnorm.pdf', width = 3.25, height = 3.25)
+par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
+curve(dlnorm(x, meanlog = 1.5, sdlog = 0.4), from = 0, to = 14, 
+      lwd=4, col='gray45', ylim=c(0, 0.25),
+      xlab = 'Latent n', ylab='Probability density')
+dev.off()
+
+pdf('fig_gamma.pdf', width = 3.25, height = 3.25)
+par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
+curve(dgamma(x, shape = 1.5, scale = 2), from = 0, to = 14, 
+      lwd=4, col='gray45', ylim=c(0, 0.25),
+      xlab = 'Latent n', ylab='Probability density')
+dev.off()
+
+
+
 ## negbinom example
 
 pdf('fig_negb.pdf', width = 6.5/1.5, height = 5/1.5)
@@ -42,3 +59,4 @@ text(14.75, dtnegb(14, 9.2, 100), labels = 'k = 100', adj=0, cex=1.5, col=hsv(0.
 par(xpd = FALSE)
 
 dev.off()
+
