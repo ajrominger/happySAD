@@ -28,11 +28,6 @@ bbsSAD <- read.csv('../../../bbsSAD.csv', as.is = TRUE)
 bbsSAD <- cbind(bbsSAD, bbsInfo[match(bbsSAD$route, bbsInfo$route.id), c('Longi', 'Lati')])
 rownames(bbsSAD) <- NULL
 
-par(mar=rep(0.1, 4))
-map('world', c('usa', 'canada'), xlim = c(-180, -50), col=NA)
-map('world', c('canada', 'alaska'), add=TRUE, col='gray', fill=TRUE, border='gray')
-map('world', 'USA:alaska', add=TRUE, col='gray', fill=TRUE, border='gray')
-map('usa', add=TRUE, col='gray', fill=TRUE, border='gray')
 
 ## function to return another function that maps a quantitative value to a color
 ## after transformation by the function xfun
@@ -48,13 +43,27 @@ colVal <- function(x, xfun, cols = hsv(c(0.55, 0.75), c(0.3, 0.8), c(1, 0.5))) {
 
 with(bbsSAD[!is.na(bbsSAD$z), ], {
     browser()
-    zfun <- colVal(z, function(x) -log(x))
-    plot(Longi, Lati, col=zfun(z), pch=16, cex=0.3)
-    pz <- pretty(range(z))
-    pz <- pz[pz > 0]
+    zfun <- colVal(z, function(x) -log(x, 10))
     
-    plot(density(-log(z)), xaxt = 'n')
-    axis(1, at = -log(pz), labels = pz)
+    layout(matrix(1:2, ncol = 1), heights = c(1, 3))
+    
+    par(mar=c(4, 2, 0, 2) + 0.1, mgp = c(1.5, 0.75, 0))
+    d <- density(-log(z, 10))
+    plot(d, axes = FALSE, ylim = c(min(d$y) - 0.3*diff(range(d$y)), max(d$y)), 
+         main = '', xlab = 'z-value', ylab = '')
+    rect(xleft = , xright = ,
+         ybottom = par('usr')[4], ytop = min(d$y))
+    axis(1, at = seq(0, 12, by = 2), labels = 10^-seq(0, 12, by = 2))
+    
+    par(mar=c(0.1, 2.1, 0, 2.1))
+    map('world', c('usa', 'canada'), xlim = c(-180, -50), col=NA)
+    map('world', c('canada', 'alaska'), add=TRUE, col='gray', fill=TRUE, border='gray')
+    map('world', 'USA:alaska', add=TRUE, col='gray', fill=TRUE, border='gray')
+    map('usa', add=TRUE, col='gray', fill=TRUE, border='gray')
+
+    plot(Longi, Lati, col=zfun(z), pch=16, cex=0.3)
+    
+    
 })
 
 
