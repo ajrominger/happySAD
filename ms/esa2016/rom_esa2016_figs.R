@@ -283,3 +283,62 @@ lines(sad2Rank(sad(x1, 'tnegb')), col = 'red', lwd = 2)
 mtext('Rank', side = 1, line = 2, outer = TRUE)
 
 dev.off()
+
+
+## residuals
+
+pdf('fig_resid.pdf', width = 6.5, height = 3)
+
+this.sad <- sad(x2, 'fish')
+
+layout(matrix(1:2, nrow = 1))
+par(mar = c(3, 4, 0, 0) + 0.1, cex.lab = 1.2, mgp = c(2, 0.75, 0))
+
+plot(sort(x2, TRUE), log = 'y', yaxt = 'n', xlab = 'Rank', ylab = 'Abundance', cex = 1.2)
+logAxis(2)
+lines(sad2Rank(this.sad), col = 'gray', lwd = 2)
+segments(x0 = 1:length(x2), y0 = sad2Rank(this.sad), y1 =sort(x2, TRUE), col = 'blue', lwd = 2)
+
+plot(simpECDF(x2), xlab = 'Abundance', ylab = 'Cumulative probability')
+lines(pfish(1:max(x2), this.sad$MLE), col = 'gray', lwd = 2)
+segments(x0 = simpECDF(x2)[, 1], y0 = pfish(simpECDF(x2)[, 1], this.sad$MLE), 
+         y1 = simpECDF(x2)[, 2], col = 'blue', lwd = 2)
+
+dev.off()
+
+
+## simulating 'null' distribution
+
+pdf('fig_simSAD.pdf', width = 5, height = 5)
+layout(matrix(c(0, 1, 1, 0, 2:5), ncol = 2))
+
+par(mar = c(4, 4.5, 2, 1))
+plot(sort(x2, TRUE), log = 'y', yaxt = 'n', xlab = 'Rank', ylab = 'Abundance', type = 'n')
+logAxis(2)
+lines(sad2Rank(sad(x2, 'tnegb')), col = 'red', lwd = 2)
+
+par(mar = c(2, 8.5, 0.5, 2.5))
+for(i in 1:4) {
+    plot(sort(rtnegb(40, 4, 0.3), TRUE), log = 'y', yaxt = 'n', xlab = '', ylab = '')
+    logAxis(2)
+}
+
+dev.off()
+
+
+pdf('fig_simLogLik.pdf', width = 3, height = 3)
+par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(2, 0.75, 0))
+curve(dnorm(x), from = -2, to = 2, xlab = 'Simulated log-likelihoods', ylab = 'Density',
+      col = 'gray', lwd = 3)
+abline(v = -0.5, col = 'blue', lwd = 2)
+text(-0.5, par('usr')[4] - 0.05*diff(range(par('usr')[3:4])), labels = 'obs logLik', adj = 1.1, col = 'blue')
+dev.off()
+
+pdf('fig_simLogLik_chi.pdf', width = 3, height = 3)
+par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(2, 0.75, 0))
+curve(dchisq(x, 1), from = 0, to = 5, xlab = 'Simulated squared log-likelihoods', ylab = 'Density',
+      col = 'gray', lwd = 3)
+abline(v = 0.5^2, col = 'blue', lwd = 2)
+text(0.5^2, par('usr')[4] - 0.05*diff(range(par('usr')[3:4])), labels = 'obs logLik^2', adj = -0.1, col = 'blue')
+dev.off()
+
