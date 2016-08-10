@@ -242,6 +242,7 @@ plot(x, bg = sppCol3, pch = 21, cex = 2, axes = FALSE, frame.plot = FALSE)
 box()
 dev.off()
 
+
 ## parametric subsampling SAD
 
 mu1 <- mean(rplnorm(1000, 2.75, 0.25))
@@ -259,3 +260,17 @@ abline(v = mu1 * c(1, 0.75, 0.5), col=hsv(c(0.68, 0.52,  0.45), c(0.9, 0.9, 0.8)
 box()
 
 dev.off()
+
+
+
+## model fit under differences in sample size
+
+x1 <- rtnegb(100, 8, 0.1)
+x2 <- rtnegb(40, 4, 0.3)
+
+plot(sort(x2, TRUE), log = 'y')
+lines(sad2Rank(sad(x2, 'tnegb')), col = 'red')
+
+plot(sort(x1, TRUE), log = 'y')
+lines(sad2Rank(sad(x1, 'tnegb')), col = 'red')
+
