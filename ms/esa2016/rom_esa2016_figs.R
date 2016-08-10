@@ -213,3 +213,21 @@ par(xpd = FALSE)
 
 dev.off()
 
+
+## subsampling SADs
+
+mu1 <- mean(rplnorm(1000, 2.75, 0.25))
+
+pdf('fig_sampling.pdf', width = 4, height = 4)
+par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(1.75, 0.75, 0))
+
+plot(dplnorm(1:30, 0.5*2.75, 0.25), type='b', col=hsv(0.45, 0.8, 1),
+     xlab = 'n', ylab = 'Probability')
+points(dplnorm(1:30, 0.75*2.75, 0.25), type='b', col=hsv(0.52, 0.9, 0.8))
+points(dplnorm(1:30, 2.75, 0.25), type='b', col=hsv(0.68, 0.9, 0.5))
+
+abline(v = mu1 * c(1, 0.75, 0.5), col=hsv(c(0.68, 0.52,  0.45), c(0.9, 0.9, 0.8), c(0.5, 0.8, 1)), lwd=2)
+
+box()
+
+dev.off()
