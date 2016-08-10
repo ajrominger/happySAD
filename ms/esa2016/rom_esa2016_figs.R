@@ -216,15 +216,43 @@ dev.off()
 
 ## subsampling SADs
 
+x <- jitter(as.matrix(expand.grid(1:8, 1:8)), amount = 0.4)
+sppCol <- sample(c(rep(hsv(0, 0.7, 0.7), 30), rep(hsv(0.14, 0.8, 1), 10), rep(hsv(0.6, 0.7, 0.8), 24)))
+
+pdf('fig_sampling1.pdf', width = 4, height = 4)
+par(mar = rep(0.1, 4))
+plot(x, bg = sppCol, pch = 21, cex = 2, axes = FALSE, frame.plot = FALSE)
+box()
+dev.off()
+
+pdf('fig_sampling2.pdf', width = 4, height = 4)
+sppCol2 <- sppCol
+sppCol2[sppCol2 == hsv(0.14, 0.8, 1)] <- 'transparent'
+par(mar = rep(0.1, 4))
+plot(x, bg = sppCol2, pch = 21, cex = 2, axes = FALSE, frame.plot = FALSE)
+box()
+dev.off()
+
+
+pdf('fig_sampling3.pdf', width = 4, height = 4)
+sppCol3 <- sppCol
+sppCol3[sample(length(sppCol), 15)] <- 'transparent'
+par(mar = rep(0.1, 4))
+plot(x, bg = sppCol3, pch = 21, cex = 2, axes = FALSE, frame.plot = FALSE)
+box()
+dev.off()
+
+## parametric subsampling SAD
+
 mu1 <- mean(rplnorm(1000, 2.75, 0.25))
 
-pdf('fig_sampling.pdf', width = 4, height = 4)
-par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(1.75, 0.75, 0))
+pdf('fig_samplingLNorm.pdf', width = 4, height = 4)
+par(mar = c(3.2, 3.2, 0, 0) + 0.1, mgp = c(2, 0.75, 0), cex.lab = 1.2)
 
 plot(dplnorm(1:30, 0.5*2.75, 0.25), type='b', col=hsv(0.45, 0.8, 1),
-     xlab = 'n', ylab = 'Probability')
-points(dplnorm(1:30, 0.75*2.75, 0.25), type='b', col=hsv(0.52, 0.9, 0.8))
-points(dplnorm(1:30, 2.75, 0.25), type='b', col=hsv(0.68, 0.9, 0.5))
+     xlab = 'n', ylab = 'Probability', cex = 1.2)
+points(dplnorm(1:30, 0.75*2.75, 0.25), type='b', col=hsv(0.52, 0.9, 0.8), cex = 1.2)
+points(dplnorm(1:30, 2.75, 0.25), type='b', col=hsv(0.68, 0.9, 0.5), cex = 1.2)
 
 abline(v = mu1 * c(1, 0.75, 0.5), col=hsv(c(0.68, 0.52,  0.45), c(0.9, 0.9, 0.8), c(0.5, 0.8, 1)), lwd=2)
 
