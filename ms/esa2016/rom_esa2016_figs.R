@@ -342,3 +342,35 @@ abline(v = 0.5^2, col = 'blue', lwd = 2)
 text(0.5^2, par('usr')[4] - 0.05*diff(range(par('usr')[3:4])), labels = 'obs logLik^2', adj = -0.1, col = 'blue')
 dev.off()
 
+
+
+## binning
+
+## funciton to bin sad data
+bin <- function(x) {
+    out <- table(floor(log(x, 2)))
+    
+    data.frame(as.numeric(names(out)) + 1, as.numeric(out))
+}
+
+pdf('fig_binning.pdf', width = 4, height = 5)
+layout(matrix(c(1:6), ncol = 2))
+
+par(mar = c(1, 4, 0, 1) + 0.2, oma = c(3, 0, 2, 0) + 0.1, cex.lab = 1.2, mgp = c(2, 0.75, 0))
+
+plot(dtnegb(1:100, 20, 1), log = 'x', xaxt = 'n', ylab = '', type = 'b')
+mtext('generator', side = 3, line = 1)
+plot(dtnegb(1:100, 20, 0.5), log = 'x', xaxt = 'n', ylab = '', type = 'b')
+mtext('Probability', side = 2, line = 2)
+plot(dtnegb(1:100, 20, 0.25), log = 'x', xaxt = 'n', xlab = '', ylab = '', type = 'b')
+mtext('Abundance', side = 1, line = 2)
+logAxis(1)
+
+barplot(bin(rtnegb(1000, 20, 1))[, 2], xlim = c(0, 11))
+mtext('binned', side = 3, line = 1)
+barplot(bin(rtnegb(1000, 20, 0.5))[, 2], xlim = c(0, 11), ylab = '')
+mtext('Number of species', side = 2, line = 2)
+barplot(bin(rtnegb(1000, 20, 0.25))[, 2], xlim = c(0, 11), names.arg = 1:9)
+mtext('Octaves', side = 1, line = 2)
+
+dev.off()
