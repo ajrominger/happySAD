@@ -268,9 +268,18 @@ dev.off()
 x1 <- rtnegb(100, 8, 0.1)
 x2 <- rtnegb(40, 4, 0.3)
 
-plot(sort(x2, TRUE), log = 'y')
-lines(sad2Rank(sad(x2, 'tnegb')), col = 'red')
+pdf('fig_diffSizeSAD.pdf', width = 6.5, height = 3)
+layout(matrix(1:2, nrow = 1))
+par(mar = c(0, 4, 0, 0), oma = c(3, 0, 0, 0) + 0.1, cex.lab = 1.2)
 
-plot(sort(x1, TRUE), log = 'y')
-lines(sad2Rank(sad(x1, 'tnegb')), col = 'red')
+plot(sort(x2, TRUE), log = 'y', yaxt = 'n', xlab = '', ylab = 'Abundance', cex = 1.2)
+logAxis(2)
+lines(sad2Rank(sad(x2, 'tnegb')), col = 'red', lwd = 2)
 
+plot(sort(x1, TRUE), log = 'y', yaxt = 'n', xlab = '', ylab = '', cex = 1.2)
+logAxis(2)
+lines(sad2Rank(sad(x1, 'tnegb')), col = 'red', lwd = 2)
+
+mtext('Rank', side = 1, line = 2, outer = TRUE)
+
+dev.off()
