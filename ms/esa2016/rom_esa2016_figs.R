@@ -176,17 +176,17 @@ dev.off()
 
 ## lognorm and gamma examples
 pdf('fig_lnorm.pdf', width = 3.25, height = 3.25)
-par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
+par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(1, 0.75, 0), cex.lab=2)
 curve(dlnorm(x, meanlog = 1.5, sdlog = 0.4), from = 0, to = 14, 
-      lwd=4, col='gray45', ylim=c(0, 0.25),
-      xlab = 'Latent n', ylab='Probability density')
+      lwd=4, col='gray45', ylim=c(0, 0.25), axes = FALSE, frame.plot = TRUE,
+      xlab = 'Latent abundance', ylab='Probability density')
 dev.off()
 
 pdf('fig_gamma.pdf', width = 3.25, height = 3.25)
-par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
+par(mar=c(3, 3, 0.2, 0.2) + 0.1, mgp=c(1, 0.75, 0), cex.lab=2)
 curve(dgamma(x, shape = 1.5, scale = 2), from = 0, to = 14, 
-      lwd=4, col='gray45', ylim=c(0, 0.25),
-      xlab = 'Latent n', ylab='Probability density')
+      lwd=4, col='gray45', ylim=c(0, 0.25), axes = FALSE, frame.plot = TRUE,
+      xlab = 'Latent abundance', ylab='Probability density')
 dev.off()
 
 
@@ -194,14 +194,12 @@ dev.off()
 ## negbinom example
 
 pdf('fig_negb.pdf', width = 6.5/1.5, height = 5/1.5)
-par(mar=c(3, 3, 0, 5) + 0.1, mgp=c(2, 0.75, 0), cex.lab=1.2)
+par(mar=c(3, 3, 0, 5) + 0.1, mgp=c(1, 0.75, 0), cex.lab=2)
 
 plot(dtnegb(1:14, 8, 0.01), type='b', col=hsv(0.15, 1, 1), lwd=2, cex=1.5, 
      ylim = c(dtnegb(1, 9.2, 100), dtnegb(1, 8, 0.01)), 
-     xlab='n', ylab='Probability', axes = FALSE, frame.plot = TRUE)
-axis(1)
-axis(2)
-#, at = seq(0, 0.12, by = 0.04))
+     xlab='Abundance', ylab='Probability', axes = FALSE, frame.plot = TRUE)
+
 points(dtnegb(1:14, 8, 1), type='b', col=hsv(0.35, 0.9, 0.7), lwd=2, cex=1.5)
 points(dtnegb(1:14, 9.2, 100), type='b', col=hsv(0.55, 0.5, 0.5), lwd=2, cex=1.5)
 
@@ -312,7 +310,7 @@ dev.off()
 pdf('fig_simSAD.pdf', width = 5, height = 5)
 layout(matrix(c(0, 1, 1, 0, 2:5), ncol = 2))
 
-par(mar = c(4, 4.5, 2, 1))
+par(mar = c(4, 4.5, 2, 1), cex.lab = 1.7, cex.axis = 1.7)
 plot(sort(x2, TRUE), log = 'y', yaxt = 'n', xlab = 'Rank', ylab = 'Abundance', type = 'n')
 logAxis(2)
 lines(sad2Rank(sad(x2, 'tnegb')), col = 'red', lwd = 2)
@@ -327,16 +325,16 @@ dev.off()
 
 
 pdf('fig_simLogLik.pdf', width = 3, height = 3)
-par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(2, 0.75, 0))
-curve(dnorm(x), from = -2, to = 2, xlab = 'Simulated log-likelihoods', ylab = 'Density',
+par(mar = c(3, 3, 0, 0) + 0.5, mgp = c(2.25, 0.75, 0), cex.lab = 1.4, cex.axis = 1.4)
+curve(dnorm(x), from = -2, to = 2, xlab = 'Sim log-likelihoods', ylab = 'Density',
       col = 'gray', lwd = 3)
 abline(v = -0.5, col = 'blue', lwd = 2)
 text(-0.5, par('usr')[4] - 0.05*diff(range(par('usr')[3:4])), labels = 'obs logLik', adj = 1.1, col = 'blue')
 dev.off()
 
 pdf('fig_simLogLik_chi.pdf', width = 3, height = 3)
-par(mar = c(3, 3, 0, 0) + 0.1, mgp = c(2, 0.75, 0))
-curve(dchisq(x, 1), from = 0, to = 5, xlab = 'Simulated squared log-likelihoods', ylab = 'Density',
+par(mar = c(3, 3, 0, 0) + 0.5, mgp = c(2.25, 0.75, 0), cex.lab = 1.4, cex.axis = 1.4)
+curve(dchisq(x, 1), from = 0, to = 5, xlab = expression('Sim log-likelihoods'^2), ylab = 'Density',
       col = 'gray', lwd = 3)
 abline(v = 0.5^2, col = 'blue', lwd = 2)
 text(0.5^2, par('usr')[4] - 0.05*diff(range(par('usr')[3:4])), labels = 'obs logLik^2', adj = -0.1, col = 'blue')
@@ -356,21 +354,39 @@ bin <- function(x) {
 pdf('fig_binning.pdf', width = 4, height = 5)
 layout(matrix(c(1:6), ncol = 2))
 
-par(mar = c(1, 4, 0, 1) + 0.2, oma = c(3, 0, 2, 0) + 0.1, cex.lab = 1.2, mgp = c(2, 0.75, 0))
+par(mar = c(1, 4, 0, 1) + 0.2, oma = c(3, 0, 2, 0) + 0.1, cex.lab = 1.5, mgp = c(2.5, 0.75, 0), cex.axis = 1.5)
 
 plot(dtnegb(1:100, 20, 1), log = 'x', xaxt = 'n', ylab = '', type = 'b')
 mtext('generator', side = 3, line = 1)
 plot(dtnegb(1:100, 20, 0.5), log = 'x', xaxt = 'n', ylab = '', type = 'b')
-mtext('Probability', side = 2, line = 2)
+mtext('Probability', side = 2, line = 2.5)
 plot(dtnegb(1:100, 20, 0.25), log = 'x', xaxt = 'n', xlab = '', ylab = '', type = 'b')
-mtext('Abundance', side = 1, line = 2)
+mtext('Abundance', side = 1, line = 2.5)
 logAxis(1)
 
 barplot(bin(rtnegb(1000, 20, 1))[, 2], xlim = c(0, 11))
 mtext('binned', side = 3, line = 1)
 barplot(bin(rtnegb(1000, 20, 0.5))[, 2], xlim = c(0, 11), ylab = '')
-mtext('Number of species', side = 2, line = 2)
+mtext('Number of species', side = 2, line = 2.5)
 barplot(bin(rtnegb(1000, 20, 0.25))[, 2], xlim = c(0, 11), names.arg = 1:9)
-mtext('Octaves', side = 1, line = 2)
+mtext('Octaves', side = 1, line = 2.5)
+
+dev.off()
+
+## relationship of plots
+
+pdf('fig_plotRelations.pdf', width = 5, height = 5)
+
+layout(matrix(c(0, 1, 1, 0, 2, 2, 3, 3), ncol = 2))
+par(mar = c(3.5, 3.5, 1, 1), mgp = c(2.25, 0.75, 0), cex.lab = 1.5, cex.axis = 1.5)
+
+plot(dtnegb(1:100, 20, 0.5), log = 'x', xaxt = 'n', xlab = 'Abundance', ylab = 'Probability', type = 'b')
+logAxis(1)
+
+plot(ptnegb(1:100, 20, 0.5), log = 'x', xaxt = 'n', xlab = 'Abundance', ylab = 'Cumulative probability')
+logAxis(1)
+
+plot(sad2Rank(sad(rtnegb(100, 20, 0.5), 'tnegb')), log = 'y', yaxt = 'n', xlab = 'Rank', ylab = 'Abundance')
+logAxis(2)
 
 dev.off()
