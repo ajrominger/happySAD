@@ -23,17 +23,22 @@ names(zn) <- c('n', 'z.mean', 'z.ciLo', 'z.ciHi', 'e.mean', 'e.ciLo', 'e.ciHi')
 plot(zn$n, zn$e.mean)
 
 
-## now try with meteR's state var approach
+## now look at when fitted model and generating model are the same
 
-zmeteRn <- lapply(N, function(n) {
+zn <- lapply(N, function(n) {
     out <- mclapply(1:100, mc.cores = 6, FUN = function(i) {
         print(paste(n, ': ', i, sep = ''))
-        s <- meteR::sad(meteR::meteESF(spp = as.character(1:n), abund = rtnegb(n, 8, 1)))
-        z <- meteR::logLikZ(s, nrep = 500)$z
+        s <- sad(x = rtnegb(n, 10, 20), model = 'tnegb', keepData = TRUE)
+        z <- logLikZ(s, nrep = 500)$z
         return(z)
     })
     out <- unlist(out)
-    browser()
+    
     return(c(mean = mean(out), quantile(out, prob = c(0.025, 0.975))))
 })
+
+zn <- data.frame(n = N, do.call(rbind, zn))
+names(zn) <- c('n', 'mean', 'ciLo', 'ciHi')
+
+plot(zn[, 1:2])
 
