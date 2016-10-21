@@ -125,4 +125,4 @@ out <- lapply(fg, function(g) {
 
 out <- do.call(rbind, out)
 
-write.csv(out, file = 'sim_goodnessFitness.csv', row.names = FALSE)
+write.csv(out, file = 'goodnessFitness_res.csv', row.names = FALSE)
