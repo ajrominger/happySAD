@@ -1,5 +1,6 @@
 library(pika)
 library(socorro)
+library(parallel)
 
 setwd('~/Dropbox/Research/happySAD')
 
@@ -67,7 +68,7 @@ out <- lapply(fg, function(g) {
         fdat <- matrix(getrfun(f)(max(S) * nz), ncol = nz)
         
         ## loop over species numbers
-        outS <- lapply(S, function(s) {
+        outS <- mclapply(S, mc.cores = 5, FUN = function(s) {
             ## calculate statistics for fitted model given data from generating model
             singleStat <- sapply(1:nrep, function(i) {
                 fm <- f
@@ -86,7 +87,7 @@ out <- lapply(fg, function(g) {
             
             ## calculate statistics for fitted model given data simulated from fitted model
             ## (i.e. for z-value calculations)
-            zSim <- sapply(1:nz, function(i) {
+            zSim <- sapply(1:nz, FUN = function(i) {
                 fm <- f
                 fm$data <- fdat[1:s, i]
                 fm$ll <- sum(getdfun(fm)(fm$data, log = TRUE))
