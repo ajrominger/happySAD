@@ -1,4 +1,4 @@
-sampTrans <- function(n, x, N, include0 = TRUE) {
+sampTrans <- function(n, x, N, include0 = TRUE, log = FALSE) {
     dfun <- getdfun(x)
     latentSAD <- dfun((1:sum(x$data)))
     
@@ -20,15 +20,24 @@ sampTrans <- function(n, x, N, include0 = TRUE) {
     })
     out <- unlist(out)
     
+    if(log) out <- log(out)
+    
     if(include0) {
         return(out)
     } else {
-        out[n == 0] <- 0
         p0 <- sampTrans(0, x, N, include0 = TRUE)
-        return(out / (1 - p0))
+        if(log) {
+            out[n == 0] <- -Inf
+            return(out - log(1 - p0))
+        } else {
+            out[n == 0] <- 0
+            return(out / (1 - p0))
+        }
     }
 }
 
 ## testing
 # plot(1:30, sampTrans(1:30, xsad, round(0.999*sum(xsad$data)), include0 = FALSE), log = 'y')
 # points(1:30, getdfun(xsad)(1:30), col = 'red')
+# log(sampTrans(0:4, xsad, 1000, include0 = FALSE))
+# sampTrans(0:4, xsad, 1000, log = TRUE, include0 = FALSE)
