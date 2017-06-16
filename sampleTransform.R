@@ -1,14 +1,29 @@
 sampTrans <- function(n, x, N, include0 = TRUE, log = FALSE) {
-    dfun <- getdfun(x)
+    if(is.null(x$model)) {
+        dfun <- function(n) {
+            tab <- table(x$data)
+            supp <- as.numeric(names(tab))
+            prob <- as.numeric(tab) / sum(tab)
+            
+            prob <- prob[match(n, supp)]
+            prob[is.na(prob)] <- 0
+            
+            return(prob)
+        }
+    } else {
+        dfun <- getdfun(x)
+    }
+    
     latentSAD <- dfun((1:sum(x$data)))
     
-    ## dhyper param conversions
-    ## x = n; abundance
-    ## m = k; total abundance of focal sp in the complete sample
-    ## n = J - k; the abundance of all other spp
-    ## k = J; total size of sample (sum of all spp abundances)
+    nloop <- unique(n)
     
-    out <- lapply(n, function(i) {
+    out <- lapply(nloop, function(i) {
+        ## dhyper param conversions
+        ## x = n; abundance
+        ## m = k; total abundance of focal sp in the complete sample
+        ## n = J - k; the abundance of all other spp
+        ## k = J; total size of sample (sum of all spp abundances)
         trans <- dhyper(i, 1:sum(x$data), sum(x$data) - (1:sum(x$data)), N)
         
         ## rational:
@@ -19,6 +34,7 @@ sampTrans <- function(n, x, N, include0 = TRUE, log = FALSE) {
         return(sum((latentSAD * trans)[is.finite(trans)]))
     })
     out <- unlist(out)
+    out <- out[match(n, nloop)]
     
     if(log) out <- log(out)
     
