@@ -1,3 +1,6 @@
+## n is the abundance(s) for which a probability is desired
+## x is an SAD object
+## N is the number of individuals sampled from that SAD
 sampTrans <- function(n, x, N, include0 = TRUE, log = FALSE) {
     if(is.null(x$model)) {
         dfun <- function(n) {
