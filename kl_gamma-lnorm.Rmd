@@ -1,0 +1,20 @@
+---
+title: "Kullback–Leibler divergence between Gamma and lognormal distributions"
+author: "A. J. Rominger"
+date: "8/9/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# KL Divergence
+
+
+$$
+D_{kl}(P_\Gamma||Q_{logNorm}) = \int_0^{1} \frac{1}{\Gamma(k) \theta^k} x^{k-1} e^{-x/\theta} \left(\text{log}\left(\frac{1}{\Gamma(k) \theta^k} x^{k-1} e^{-x/\theta}\right) -
+\text{log}\left( \frac{1}{x \sigma \sqrt{2\pi}} e^{-(\text{log}x - \mu)^2/(2\sigma^2)}\right) \right)
+$$
+
+Note that in general KL divergence is the mean difference in the log likelihood functions for a hypothetical dataset generated with the distribution of $P(x)$.
