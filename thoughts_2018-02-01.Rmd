@@ -1,0 +1,74 @@
+---
+title: "Some happy SAD thoughts"
+author: "A. J. Rominger"
+date: "2/1/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+How much to humped distributions start looking log-series as you subsample them?
+
+```{r, fig.width=4, fig.height=5, cache=TRUE}
+library(pika)
+library(parallel)
+
+mu <- 20
+k <- 10
+x <- rtnegb(1000, mu, k)
+p <- exp(seq(log(0.01), log(0.75), length.out = 5))
+
+res <- mclapply(p[-length(p)], mc.cores = 10, FUN = function(prob) {
+    sim <- replicate(100, {
+        xprm <- sample.sad(sad(x, keepData = TRUE), size = round(sum(x) * prob))
+        xsub <- sad2Rank(sad(xprm, 'fish'))
+        out <- sort(xprm, TRUE) - xsub
+        out <- c(out, rep(NA, length(x) - length(out)))
+        
+        return(out)
+    })
+    
+    return(rowMeans(sim))
+})
+
+res <- do.call(cbind, res)
+
+par(mfrow = c(2, 1), mar = c(2, 2, 0, 0) + 0.5, mgp = c(1.5, 0.5, 0))
+plot(dtnegb(0:40, mu, k), xlab = 'N', ylab = 'Prob')
+matplot(res, type = 'l', col = rev(viridis::viridis(length(p))), lty = 1, 
+        ylim = range(res[res > -15 & res < 15], na.rm = TRUE), 
+        xlab = 'Species rank', ylab = 'Diff in abundance')
+```
+
+This shows that a negative binomial starts looking log series for small sample size.  Additionally a log-series over-predicts the abundance of the most abundant, and under predicts the abundance of the medium rare.
+
+We could also look at log-series versus lognormal with sample size.  We see that for small sample size it's not that we always get a log-series, it's that all distributions look alike.
+
+```{r, eval=FALSE}
+library(pika)
+library(parallel)
+
+mu <- 20
+k <- 10
+x <- rtnegb(1000, mu, k)
+p <- exp(seq(log(0.01), log(0.75), length.out = 10))
+
+res <- mclapply(p[-length(p)], mc.cores = 10, FUN = function(prob) {
+    sim <- replicate(100, {
+        xprm <- sample.sad(sad(x, keepData = TRUE), size = round(sum(x) * prob))
+        out <- c(AIC(logLik(sad(xprm, 'fish'))), AIC(logLik(sad(xprm, 'plnorm'))), AIC(logLik(sad(xprm, 'tnegb'))))
+        
+        return(out)
+    })
+    
+    return(rowMeans(sim))
+})
+
+res <- do.call(rbind, res)
+
+par(mfrow = c(2, 1), mar = c(2, 2, 0, 0), mgp = c(1, 0.5, 0))
+plot(dtnegb(0:40, mu, k))
+matplot(res, type = 'l', col = rev(viridis::viridis(length(p))), lty = 1)
+```
