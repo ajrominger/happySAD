@@ -1,0 +1,154 @@
+---
+title: "When does a Poisson log-normal look like a negative binomial?"
+author: "A. J. Rominger"
+date: "7/20/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We want the expected value and variance of zero-truncated negative binomial maximum log likelihoods given $N$ draws from a Poisson log-normal distribution with parameters $\mu$ and $\sigma$.
+
+Maybe we can use the underlying math of the `logLikZ` function to do this.  In `logLikZ` we have the following:
+
+```{r, eval=FALSE}
+# hypothetical distribution of probabilities
+p0 <- .p0(x)
+
+# hypothetical mean and var
+m <- sum(p0 * exp(p0)) * n
+v <- sum((m/n - p0)^2 * exp(p0)) * n
+
+.p0 <- function(x) {
+    n0 <- 1:10^5
+    dfun <- getdfun(x)
+    
+    p0 <- dfun(n0, log = TRUE)
+    p0 <- p0[is.finite(p0)]
+    
+    if(exp(p0[length(p0)]) > .Machine$double.eps^0.75) {
+        n0add <- (n0[length(p0)] + 1):10^6
+        p0add <- dfun(n0add, log = TRUE)
+        p0add <- p0add[is.finite(p0add)]
+        
+        p0 <- c(p0, p0add)
+    }
+    
+    return(p0)
+}
+```
+
+Taking for example the term for the mean `m <- sum(p0 * exp(p0)) * n`, we see that the `p0` term is the vector of all possible log likelihood values while the `exp(p0)` term is the probability of observing any one of those log likelihood values.  So if we want to know the mean and variance of likelihoods of, e.g., a negative binomial model given negative binomial data, we leave these expressions as is.  If, on the other hand, we want the likelihoods of a negative binomial model given Poisson lognormal data we would need `exp(q0)` instead of `exp(p0)` where `q0` comes from the Poisson lognormal distribution.
+
+Let's make a function for this idea, that we can calculate the mean and variance of a log likelihood function where the model and data can either derive from the same distribution or different.  What's more we can take the difference of the two resulting distributions of likelihoods, one where model and data come from the same distribution, and the other where they don't.
+
+```{r}
+# we'll be using SADs from pika so might as well load now
+library(pika)
+
+#' @param d1 a function describing the PMF of the first distribution
+#' @param d2 function for the second distribution
+#' @param N number of observations (i.e. species)
+#' @details note: this function assumes the data from from the first 
+#' distribution `d1`
+llDist <- function(d1, d2, N) {
+    p <- makeP(d1)
+    q <- makeP(d2)
+    
+    mPgivenP <- sum(p * exp(p)) * N
+    vPgivenP <- sum((mPgivenP / N - p)^2 * exp(p)) * N
+    
+    # p and q might be different lengths, so standardize them before
+    # combining them
+    xMax <- max(length(p), length(q))
+    p <- p[1:xMax]
+    q <- q[1:xMax]
+    
+    mQgivenP <- sum(q * exp(p)) * N
+    vQgivenP <- sum((mQgivenP / N - q)^2 * exp(p)) * N
+    
+    mPQDiff <- mPgivenP - mQgivenP
+    vPQDiff <- vPgivenP + vQgivenP
+    
+    return(c(mean = mPQDiff, sd = sqrt(vPQDiff)))
+}
+
+# helper function to make a vector of log probabilites
+makeP <- function(dfun) {
+    n0 <- 1:10^5
+    
+    p0 <- dfun(n0, log = TRUE)
+    p0 <- p0[is.finite(p0)]
+    
+    if(exp(p0[length(p0)]) > .Machine$double.eps^0.75) {
+        n0add <- (n0[length(p0)] + 1):10^6
+        p0add <- dfun(n0add, log = TRUE)
+        p0add <- p0add[is.finite(p0add)]
+        
+        p0 <- c(p0, p0add)
+    }
+    
+    return(p0)
+}
+
+# test it out
+llDist(d1 = function(n, ...) dplnorm(n, 1, 1, ...), 
+       d2 = function(n, ...) dtnegb(n, 1, 1, ...), 
+       N = 100)
+```
+
+Note `d1` and `d2` need to be functions that already contain the desired parameterization of the probability distributions they represent.  So the next thing we need is to be able to find the maximum likelihood parameterization of the negative binomial model for an arbitrary data set generated with a known parameterization of the Poisson log-normal.  We can do that by minimizing the KL divergence between the two:
+
+$$
+D_{NB|PNL} = - \sum_{i = 1}^\infty P_{PLN}(n_i) \text{log}\left(\frac{P_{PLN}(n_i)}{P_{NB}(n_i)} \right)
+$$
+
+Rearranging a little can help us write a more efficient optimization routine:
+
+$$
+D_{NB|PNL} = - \sum_{i = 1}^\infty P_{PLN}(n_i) \left(\text{log}P_{PLN}(n_i) \right) +
+\sum_{i = 1}^\infty P_{PLN}(n_i) \left(\text{log}P_{NB}(n_i) \right)
+$$
+
+We are seeking the optimal parameters for the negative binomial, so the terms involving only PLN need only be computed once in the optimaztion
+
+```{r, eval=FALSE}
+#' @param d1 is the Poisson log-normal PMF, consistent with \code{d1} 
+#' in \code{lldist}
+minKL_pln_nb <- function(plnParam) {
+    browser()
+    p <- makeP(function(n, ...) {
+        dplnorm(n, plnParam[1], plnParam[2], ...)
+    })
+    n0 <- 1:length(p)
+    
+    plnEnt <- -sum(exp(p) * p)
+    
+    o <- optim(plnParam, function(param) {
+        if(any(param < .Machine$double.eps^0.75)) {
+            return(NA)
+        } else {
+            q <- try(makeP(function(n, ...) {
+                dtnegb(n, param[1], param[2], ...)
+            }))
+            if(class(q) == 'try-error') browser()
+            
+            xMax <- max(length(p), length(q))
+            
+            q <- q[1:xMax]
+            p <- p[1:xMax]
+            
+            return(plnEnt + sum(exp(p) * q))
+        }
+    })
+    
+    o <- c(plnParam, o$par, o$value, o$convergence == 0)
+    names(o) <- c('pln_mu', 'pln_sig', 'tnb_mu', 'tnb_k', 'kl_dist', 'converg')
+    return(o)
+}
+
+# test it out
+minKL_pln_nb(c(2, 1))
+```
