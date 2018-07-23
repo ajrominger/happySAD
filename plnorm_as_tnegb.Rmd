@@ -102,53 +102,102 @@ llDist(d1 = function(n, ...) dplnorm(n, 1, 1, ...),
 Note `d1` and `d2` need to be functions that already contain the desired parameterization of the probability distributions they represent.  So the next thing we need is to be able to find the maximum likelihood parameterization of the negative binomial model for an arbitrary data set generated with a known parameterization of the Poisson log-normal.  We can do that by minimizing the KL divergence between the two:
 
 $$
-D_{NB|PNL} = - \sum_{i = 1}^\infty P_{PLN}(n_i) \text{log}\left(\frac{P_{PLN}(n_i)}{P_{NB}(n_i)} \right)
+D_{NB|PNL} = \sum_{i = 1}^\infty P_{PLN}(n_i) \text{log}\left(\frac{P_{PLN}(n_i)}{P_{NB}(n_i)} \right)
 $$
 
 Rearranging a little can help us write a more efficient optimization routine:
 
 $$
-D_{NB|PNL} = - \sum_{i = 1}^\infty P_{PLN}(n_i) \left(\text{log}P_{PLN}(n_i) \right) +
+D_{NB|PNL} = \sum_{i = 1}^\infty P_{PLN}(n_i) \left(\text{log}P_{PLN}(n_i) \right) -
 \sum_{i = 1}^\infty P_{PLN}(n_i) \left(\text{log}P_{NB}(n_i) \right)
 $$
 
 We are seeking the optimal parameters for the negative binomial, so the terms involving only PLN need only be computed once in the optimaztion
 
-```{r, eval=FALSE}
+```{r}
 #' @param d1 is the Poisson log-normal PMF, consistent with \code{d1} 
 #' in \code{lldist}
+
 minKL_pln_nb <- function(plnParam) {
-    browser()
     p <- makeP(function(n, ...) {
         dplnorm(n, plnParam[1], plnParam[2], ...)
     })
     n0 <- 1:length(p)
     
-    plnEnt <- -sum(exp(p) * p)
+    plnEnt <- sum(exp(p) * p)
     
-    o <- optim(plnParam, function(param) {
+    KL_pln_nb <- function(param) {
         if(any(param < .Machine$double.eps^0.75)) {
             return(NA)
         } else {
-            q <- try(makeP(function(n, ...) {
-                dtnegb(n, param[1], param[2], ...)
-            }))
-            if(class(q) == 'try-error') browser()
-            
-            xMax <- max(length(p), length(q))
-            
-            q <- q[1:xMax]
-            p <- p[1:xMax]
-            
-            return(plnEnt + sum(exp(p) * q))
+            q <- dtnegb(n0, param[1], param[2], log = TRUE)
+            return(plnEnt - sum(exp(p) * q, na.rm = TRUE))
         }
-    })
+    }
     
-    o <- c(plnParam, o$par, o$value, o$convergence == 0)
+    o <- optim(plnParam, KL_pln_nb)
+    
+    o <- c(plnParam, o$par, o$value, o$convergence)
     names(o) <- c('pln_mu', 'pln_sig', 'tnb_mu', 'tnb_k', 'kl_dist', 'converg')
     return(o)
 }
 
 # test it out
-minKL_pln_nb(c(2, 1))
+foo <- minKL_pln_nb(c(2, 1))
+foo
+```
+
+Now we can look at the likelihood distance for the optimal parameters
+
+```{r}
+dist1 <- llDist(d1 = function(n, ...) dplnorm(n, 2, 1, ...), 
+                d2 = function(n, ...) dtnegb(n, foo['tnb_mu'], foo['tnb_k'], ...), 
+                N = 100)
+dist1
+```
+
+Finally we can use this normally distributed distance to calculate the probability of failing to distinguish between PLN and NB:
+
+```{r}
+pnorm(2, dist1[1], dist1[2])
+```
+
+So we're about 50/50 as to whether we reject NB in favor of PLN, i.e. there's about a 0.5 probability that the two likelihoods (and thus their AIC, sence number of parameters are equal) are within 2 units of each other.
+
+We can put this all together and look at when we reject NB across the parameter space of the PLN:
+
+```{r, cache=TRUE}
+plnPars <- expand.grid(seq(0.1, 10, length.out = 20), seq(0.01, 5, length.out = 20))
+
+llInfo <- lapply(1:nrow(plnPars), function(i) {
+    pln <- unlist(plnPars[i, ])
+    o <- minKL_pln_nb(pln)
+    thisDist <- llDist(d1 = function(n, ...) dplnorm(n, pln[1], pln[2], ...), 
+                       d2 = function(n, ...) dtnegb(n, o['tnb_mu'], o['tnb_k'], ...), 
+                       N = 100)
+    o <- c(o, thisDist, pVal = pnorm(2, thisDist[1], thisDist[2]))
+    
+    return(o)
+})
+
+llInfo <- do.call(rbind, llInfo)
+head(llInfo)
+```
+
+Plotting it:
+
+```{r, fig.width=5, fig.height=3}
+library(socorro)
+library(viridis)
+
+layout(matrix(1:2, nrow = 1), widths = c(2, 1))
+
+par(mar = c(3, 3, 0, 0) + 0.5)
+image(unique(llInfo[, 'pln_sig']), unique(llInfo[, 'pln_mu']), 
+      matrix(llInfo[, 'pVal'], nrow = length(unique(llInfo[, 'pln_mu']))), 
+      col = viridis(30))
+
+par(mar = c(3, 0, 0, 0) + 0.5)
+plot(simpECDF(llInfo[, 'pVal']), col = quantCol(sort(unique(llInfo[, 'pVal'])), 
+                                                viridis(30)))
 ```
