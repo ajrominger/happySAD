@@ -1,0 +1,133 @@
+---
+title: "Finding happiness in your SAD"
+author: "Andrew J. Rominger"
+output:
+  pdf_document:
+    fig_caption: yes
+    keep_tex: no
+    number_sections: no
+csl: ecology-letters.csl
+bibliography: happySAD.bib
+---
+
+
+```{r setup, include = FALSE}
+# chunk options
+library(knitr)
+opts_chunk$set(echo = FALSE, fig.width = 4, fig.height = 4, fig.align = 'center', cache = TRUE)
+
+# plotting defaults
+parArgs <- list(mar = c(3, 3, 0, 0) + 0.5, mgp = c(1.75, 0.5, 0), tcl = -0.25)
+cexDefault <- 1.4
+lwdDefault <- 2
+
+# needed libraries
+library(pika)
+library(socorro)
+sapply(list.files('../R'), function(f) source(paste('../R', f, sep = '/')))
+```
+
+
+## Abstract
+
+# Introduction
+
+The species abundance distribution (SAD) is a central metric used throught Ecology to describe the commonness 
+
+## SAD shapes
+
+```{r shapeSetup}
+npar <- 4
+nn <- unique(round(exp(seq(log(1), log(500), length.out = 100))))
+```
+
+
+```{r fishShape, fig.width = 7, fig.height = 2}
+bb <- seq(0.001, 0.1, length.out = npar)
+
+par(parArgs)
+sadShape(list(b = bb), nn, dfish, xlab = expression(beta), ylab = '',
+         main = 'Log-series')
+
+
+# ymax <- max(sapply(bb, function(b) dfish(1, b)))
+# 
+# par(parArgs)
+# par(plt = c(0.015, 0.985, 0.25, 0.9))
+# 
+# plot(bb, numeric(npar), type = 'n', yaxt = 'n', axes = FALSE, xlab = expression(beta))
+# axis(1)
+# mtext('Logseries', line = 0.5)
+# 
+# strt <- par('plt')[1]
+# bystep <- diff(par('plt')[1:2]) / npar
+# m <- cbind(seq(strt, by = bystep, length.out = 4), 
+#            seq(strt + bystep, by = bystep, length.out = npar), 
+#            par('plt')[3], par('plt')[4])
+# 
+# foo <- split.screen(m, erase = FALSE)
+# for(i in 1:npar) {
+#     screen(i, new = FALSE)
+#     par(mar = c(0.2, 0, 0, 0) + 0.1, mgp = c(1, 0.2, 0), tcl = -0.2)
+#     plot(nn, dfish(nn, bb[i]), xlab = '', ylab = '', log = 'x', type = 'l', lwd = 2, 
+#          ylim = c(.Machine$double.eps^0.75, ymax), xaxt = 'n', yaxt = 'n')
+#     # logAxis(1, expLab = TRUE, minor = FALSE)
+# }
+# 
+# close.screen(all.screens = TRUE)
+```
+
+
+```{r tnegbShape, fig.width = 6, fig.height = 6}
+mm <- seq(3, 10, length.out = npar)
+kk <- seq(0.1, 4, length.out = npar)
+
+par(parArgs)
+sadShape(list(mu = mm, k = kk), nn, dtnegb, xlab = expression(mu), ylab = expression(k), 
+         main = 'Truncated negative binomial')
+```
+
+```{r plnormShape, fig.width = 6, fig.height = 6}
+mm <- seq(1, 4, length.out = 4)
+ss <- seq(0.5, 2, length.out = 4)
+
+par(parArgs)
+sadShape(list(mu = mm, s = ss), nn, dplnorm, xlab = expression(mu), ylab = expression(sigma), 
+         main = 'Poisson lognormal')
+```
+
+# Methods
+
+
+# Results
+
+## correlation of various goodness of fit metrics
+
+```{r goodnessCorr_sim}
+# foo
+```
+
+```{r goodnessCorr_plot}
+plot(1:10, cex = cexDefault)
+```
+
+## relative AIC with sampling
+## hypothesis tests with sampling
+## probability of internal modes with sampling and generating model
+
+
+## model distinguishability across NB parameter space
+
+# Discussion
+
+- Don't bin
+- Don't "average"
+- Fit with likelihood
+- Sampling is important and the veil line is too simplistic
+
+
+# References
+
+
+
+
