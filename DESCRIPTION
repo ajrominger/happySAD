@@ -1,0 +1,20 @@
+Package: happySAD
+Type: Package
+Title: A package in support of the manuscript ""
+Version: 0.1.0
+Author: Andrew J. Rominger
+Maintainer: The package maintainer <ajrominger@gmail.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-2
+Encoding: UTF-8
+LazyLoad: yes
+LazyData: true
+Depends:
+    R (>= 3.6.0)
+Imports:
+    pika
+    socorro
+Suggests:
+    testthat
+RoxygenNote: 6.0.01
