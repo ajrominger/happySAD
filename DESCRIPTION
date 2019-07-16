@@ -13,8 +13,8 @@ LazyData: true
 Depends:
     R (>= 3.6.0)
 Imports:
-    pika
+    pika,
     socorro
 Suggests:
     testthat
-RoxygenNote: 6.0.01
+RoxygenNote: 6.1.1
