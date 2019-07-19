@@ -14,7 +14,8 @@ Depends:
     R (>= 3.5.0)
 Imports:
     pika,
-    socorro
+    socorro,
+    distr
 Suggests:
     testthat
 RoxygenNote: 6.1.1
