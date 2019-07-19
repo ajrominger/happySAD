@@ -17,7 +17,8 @@ pmultinom(q, size, prob, s = size)
 Cumulative probability function of the multinomial distribution
 }
 \references{
-Levin, B. (1981). A representation for multinomial cumulative distribution functions. The Annals of Statistics, 1123-1126.
+Levin, B. (1981). A representation for multinomial cumulative distribution functions.
+The Annals of Statistics, 1123-1126.
 }
 \author{
 Andy Rominger <ajrominger@gmail.com>
