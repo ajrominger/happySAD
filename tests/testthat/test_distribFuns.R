@@ -14,6 +14,23 @@ test_that('when upper truncation is large the `dsumuptpois` function is equivila
 })
 
 
+# ll <- seq(1, 8, length.out = 12)
+# mm <- rep(500, 12)
+# dsumuptpois(40:60, ll, mm)
+#
+# dpois(40:60, sum(ll))
+#
+#
+# ll <- seq(1, 4, length.out = 12)
+# mm <- round(seq(5, 10, length.out = 12))
+# dsumuptpois(20:50, ll, mm)
+
+
+
+dpois(40:60, sum(ll))
+
+
+
 # ----
 # pmultinom
 
