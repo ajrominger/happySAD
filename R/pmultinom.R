@@ -43,9 +43,6 @@ pmultinom <- function(q, size, prob , s = size) {
 #' @param m integer vector upper (inclusive) limits
 #' @author Andy Rominger <ajrominger@@gmail.com>
 #'
-# @references Levin, B. (1981). A representation for multinomial cumulative distribution functions.
-# The Annals of Statistics, 1123-1126.
-#'
 #' @export
 
 # dsumuptpois <- function(N, lambda, m) {
@@ -87,9 +84,6 @@ dsumuptpois <- function(N, lambda, m) {
 #' @param m upper (inclusive) limit
 #' @author Andy Rominger <ajrominger@@gmail.com>
 #'
-#' @references Levin, B. (1981). A representation for multinomial cumulative distribution functions.
-#' The Annals of Statistics, 1123-1126.
-#'
 #' @export
 
 duptpois <- function(x, lambda, m) {
@@ -98,50 +92,3 @@ duptpois <- function(x, lambda, m) {
 
     return(o)
 }
-
-
-# conv <- function(dfun1, dfun2, m) {
-#     M <- sum(m)
-#     mm <- 0:M
-#
-#     function(x) {
-#         return(colSums(outer(mm, x, function(m, k) dfun1(m) * dfun2(k - m))))
-#     }
-# }
-
-
-
-# mydsumuptpois <- function(N, lambda, m) {
-#     funlist <- vector('list', length(lambda))
-#
-#     funlist[[1]] <- function(x) duptpois(x, lambda[1], m[1])
-#
-#     for(i in 2:length(lambda)) {
-#         miless1 <- sum(m[1:(i - 1)])
-#         funlist[[i]] <- conv(funlist[[i - 1]], function(x) duptpois(x, lambda[i], m[i]), m = c(miless1, m[i]))
-#     }
-#
-#     return(funlist[[length(lambda)]](N))
-# }
-#
-
-
-
-
-
-# foo <- conv(conv(conv(function(x) dpois(x, 1),
-#                       function(x) dpois(x, 3), 100),
-#                  function(x) dpois(x, 5), 100),
-#             function(x) dpois(x, 7), 100)
-# foo(0:10) - dpois(0:10, 1 + 3 + 5 + 7)
-#
-# distrdsumuptpois(0:10, c(1, 2, 5, 7), rep(100, 4))
-#
-
-#
-#
-# bla <- conv(conv(function(x) dpois(x, 1), function(x) dpois(x, 2), 1000),
-#             function(x) dpois(x, 3), 1000)
-# plot(0:10, sapply(0:10, bla))
-# lines(0:10, dpois(0:10, 6))
-
