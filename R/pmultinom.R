@@ -64,7 +64,8 @@ dsumuptpois <- function(N, lambda, m) {
 
     for(i in 2:length(lambda)) {
         ff[[i]] <- cladoRcpp::rcpp_convolve(ff[[i - 1]],
-                                            duptpois(0:ifelse(m[i] < N, m[i], N), lambda[i], m[i]))
+                                            duptpois(0:ifelse(m[i] < N, m[i], N),
+                                                     lambda[i], m[i]))
     }
     # browser()
 
@@ -74,59 +75,6 @@ dsumuptpois <- function(N, lambda, m) {
     return(o)
 }
 
-# dsumuptpois <- function(N, lambda, m) {
-#     ff <- vector('list', length(lambda))
-#     ff[[1]] <- duptpois(0:m[1], lambda[1], m[1])
-#
-#     for(i in 2:length(lambda)) {
-#         ff[[i]] <- convolve(ff[[i - 1]], rev(duptpois(0:m[i], lambda[i], m[i])), type = 'o')
-#     }
-#     # browser()
-#
-#     o <- ff[[length(lambda)]][N + 1]
-#     o[is.na(o)] <- 0
-#
-#     return(o)
-# }
-
-# dsumuptpois <- function(N, lambda, m) {
-#     # number of random variables
-#     t <- length(m)
-#
-#     # vector of means and variances for each r.v.
-#     mu <- lambda * (1 - dpois(m, lambda) / ppois(m, lambda))
-#     sig2 <- mu - (m - mu) * (lambda - mu)
-#
-#     # function for Bruce Levin's $m^r$
-#     msupR <- function(r) {
-#         sapply(m, function(mi) prod(mi - 0:(r + 1)))
-#     }
-#
-#     # vector of Bruce Levin's $\mu_{(r)}$
-#     mus <- matrix(0, nrow = 4, ncol = t)
-#     mus[1, ] <- mu
-#     for(r in 2:4) {
-#         mus[r, ] <- lambda * mus[r - 1, ] - msupR(r - 1) * (lambda - mu)
-#     }
-#
-#     # third and forth moments
-#     mu3 <- mus[3, ] + mus[2, ] * (3 - 3*mu) + (mu - 3*mu^2 + 2*mu^3)
-#     mu4 <- mus[4, ] + mus[3, ] * (6 - 4*mu) + mus[2, ] * (7 - 12*mu + 6*mu^2) +
-#         (mu - 4*mu^2 + 6*mu^3 - 3*mu^4)
-#
-#     # coeffs of skewness and excess
-#     gamma1 <- 1/sqrt(t) * (sum(mu3) / t) / ((sum(sig2) / t)^(3/2))
-#     gamma2 <- 1/t * (sum(mu4 - 3 * sig2^2) / t) / ((sum(sig2) / t)^2)
-#
-#     # Bruce Levin's $f(x)$
-#     f <- function(x) {
-#         (exp(-(x^2) / 2) / sqrt(2*pi)) * (1 + gamma1/6 * (x^3 - 3*x) +
-#                                               gamma2/24 * (x^4 - 6*x^2 + 3) +
-#                                               (gamma1^2)/72 * (x^6 - 15*x^4 + 45*x^2 - 15))
-#     }
-#
-#     return(f((N - sum(mu)) / sqrt(sum(sig2))) / sqrt(sum(sig2)))
-# }
 
 #' @title Upper truncated Poisson random variables
 #'
