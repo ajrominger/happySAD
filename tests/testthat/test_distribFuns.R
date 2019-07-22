@@ -27,7 +27,7 @@ test_that('when upper truncation is large the `dsumuptpois` function is equivila
 
 
 
-dpois(40:60, sum(ll))
+# dpois(40:60, sum(ll))
 
 
 
@@ -39,3 +39,34 @@ test_that('pmultinom output matches published value', {
     hyp <- pmultinom(rep(3, 12), 12, rep(1, 12), 12)
     expect_equal(floor(hyp * 1000), floor(levin * 1000))
 })
+
+
+# ----
+# dintModeGivenS
+
+
+# b <- 10
+# S <- 1000
+# noct <- 13
+# nn <- 1:(2^(noct) - 1)
+# octs <- floor(log(nn, 2))
+#
+# pp <- dfish(nn, b)
+# octProbs <- tapply(pp, octs, sum)
+#
+# x <- proc.time()
+# thr <- dintModeGivenS(S, b, dfish)
+# proc.time() - x
+#
+# x <- proc.time()
+# rr <- rmultinom(10000, S, octProbs)
+# sim <- sapply(1:13, function(i) {
+#     o <- apply(rr, 2, function(x) all(x[i] >= x[-i]))
+#     mean(o)
+# })
+# proc.time() - x
+#
+# plot(thr, ylim = 0:1)
+# points(sim, col = 'red')
+#
+#
