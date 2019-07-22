@@ -70,3 +70,21 @@ test_that('pmultinom output matches published value', {
 # points(sim, col = 'red')
 #
 #
+
+
+# N <- 200
+# foo <- dSGivenN(1:200, N, 0.1, 'fish')
+#
+# ss <- 1:150
+# nrep <- 10000
+# goo <- lapply(ss, function(s) {
+#     x <- rfish(s * nrep, 0.1)
+#     xx <- split(x, rep(1:nrep, each = s))
+#
+#     sapply(xx, sum)
+# })
+#
+# goo <- data.frame(s = rep(ss, each = nrep), N = unlist(goo))
+#
+# plot(cumsum(foo), xlim = range(ss), type = 'l', lwd = 3)
+# lines(simpECDF(goo$s[goo$N == N]), col = 'red', lwd = 2)
