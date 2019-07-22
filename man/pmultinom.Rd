@@ -13,6 +13,9 @@ pmultinom(q, size, prob, s = size)
 
 \item{prob}{vector of probabilities for each of k boxes, internally normalized}
 }
+\value{
+a vector of probabilities equal in length to \code{q}
+}
 \description{
 Cumulative probability function of the multinomial distribution
 }

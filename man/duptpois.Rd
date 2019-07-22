@@ -13,12 +13,11 @@ duptpois(x, lambda, m)
 
 \item{m}{upper (inclusive) limit}
 }
+\value{
+a vector of probabilities equal in length to \code{x}
+}
 \description{
 Upper truncated Poisson random variables
-}
-\references{
-Levin, B. (1981). A representation for multinomial cumulative distribution functions.
-The Annals of Statistics, 1123-1126.
 }
 \author{
 Andy Rominger <ajrominger@gmail.com>

@@ -7,11 +7,14 @@
 dsumuptpois(N, lambda, m)
 }
 \arguments{
-\item{N}{integer, the value of summed upper truncated Poisson r.v.'s}
+\item{N}{integer (potentially a vector), the value of summed upper truncated Poisson r.v.'s}
 
 \item{lambda}{vector of means for each upper truncted Poisson}
 
 \item{m}{integer vector upper (inclusive) limits}
+}
+\value{
+a vector of probabilities equal in length to \code{N}
 }
 \description{
 Sum of upper truncated Poisson random variables
