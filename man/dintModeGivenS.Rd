@@ -24,10 +24,10 @@ For Preston octaves 0 through 12, this function calculates the probability that 
 octave could be a modal octave (mode defined as equal to the maximum frequency of species).
 More than one octave could meet this criterian, so the returned vector of probabilities will
 not neccesarily sum to 1.  The probability of a mode at octave i is
-$\sum_s P(o_i = s) P(\text{all } o_{j \neq i} \leq s)$ where $P(o_i = s)$ is simply
+\eqn{\sum_s P(o_i = s) P(\text{all } o_{j \neq i} \leq s)} where \eqn{P(o_i = s)} is simply
 \code{dbinom(s, S, p[i])} where \code{S} is the total number of species and \code{p[i]} is the
 summed probability of the SAD corresponding to octave i. And where
-$P(\text{all } o_{j \neq i} \leq s)$ is given by \code{pmultinom(rep(s, 12), S - s, p[-i])}
+\eqn{P(\text{all } o_{j \neq i} \leq s)} is given by \code{pmultinom(rep(s, 12), S - s, p[-i])}
 }
 \author{
 Andy Rominger <ajrominger@gmail.com>
