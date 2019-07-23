@@ -11,9 +11,9 @@ Encoding: UTF-8
 LazyLoad: yes
 LazyData: true
 Depends:
-    R (>= 3.5.0)
+    R (>= 3.5.0), 
+    pika
 Imports:
-    pika,
     socorro,
     distr
 Suggests:
