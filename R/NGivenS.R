@@ -25,24 +25,24 @@
 
 dNGivenS <- function(N, S, pars, mod, log = FALSE) {
     musig <- switch(mod,
-                    'fish' = c(.fishMean(pars) * S, sqrt(.fishVar(pars) * S)),
-                    'plnorm' = c(0, 0),
-                    'stick' = c(0, 0),
-                    'tnegb' = c(0, 0),
-                    'untb' = c(0, 0))
+                    'fish' = list(.fishMean(pars) * S, sqrt(.fishVar(pars) * S)),
+                    'plnorm' = list(0, 0),
+                    'stick' = list(0, 0),
+                    'tnegb' = list(0, 0),
+                    'untb' = list(0, 0))
 
-    return(dnorm(N, musig[1], musig[2], log = log))
+    return(dnorm(N, musig[[1]], musig[[2]], log = log))
 }
 
 #' @export
 #' @rdname NGivenS
 pNGivenS <- function(N, S, pars, mod, lower.tail = TRUE, log.p = FALSE) {
     musig <- switch(mod,
-                    'fish' = c(.fishMean(pars) * S, sqrt(.fishVar(pars) * S)),
-                    'plnorm' = c(0, 0),
-                    'stick' = c(0, 0),
-                    'tnegb' = c(0, 0),
-                    'untb' = c(0, 0))
+                    'fish' = list(.fishMean(pars) * S, sqrt(.fishVar(pars) * S)),
+                    'plnorm' = list(0, 0),
+                    'stick' = list(0, 0),
+                    'tnegb' = list(0, 0),
+                    'untb' = list(0, 0))
 
     return(pnorm(N, musig[1], musig[2], lower.tail = lower.tail, log.p = log.p))
 }
