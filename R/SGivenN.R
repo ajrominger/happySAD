@@ -18,10 +18,11 @@
 
 dSGivenN <- function(S, N, pars, mod) {
     maxS <- round(N / (0.1 * .fishMean(pars)))
+    if(maxS > N) maxS <- N
     Z <- sum(dNGivenS(N, 1:maxS, pars, mod))
     o <- dNGivenS(N, S, pars, mod) / Z
 
-    o[S >= maxS] <- 0
+    o[S > maxS] <- 0
 
     return(o)
 }
