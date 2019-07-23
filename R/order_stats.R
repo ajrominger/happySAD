@@ -34,19 +34,19 @@ dmse <- function(s) {
 
     mean(colSums(ords * errs))
 }
-
-foo <- sad(rfish(100, 0.1), 'fish', keepData = TRUE)
-z <- mseZ(foo, 999, return.sim = TRUE)
-plot(density(log(z$sim)))
-log(dmse(foo))
-
-
-
-
-r <- 30
-layout(matrix(1:2, nrow = 1))
-par(mar = c(2, 2, 0, 0))
-bla <- dorder.sad(r, 1:max(foo$data), foo)
-plot(bla, 1:max(foo$data), log = 'y', type = 'l', lwd = 2)
-plot(foo, ptype = 'rad', log = 'y')
-abline(v = r, h = which.max(bla))
+#
+# foo <- sad(rfish(100, 0.1), 'fish', keepData = TRUE)
+# z <- mseZ(foo, 999, return.sim = TRUE)
+# plot(density(log(z$sim)))
+# log(dmse(foo))
+#
+#
+#
+#
+# r <- 30
+# layout(matrix(1:2, nrow = 1))
+# par(mar = c(2, 2, 0, 0))
+# bla <- dorder.sad(r, 1:max(foo$data), foo)
+# plot(bla, 1:max(foo$data), log = 'y', type = 'l', lwd = 2)
+# plot(foo, ptype = 'rad', log = 'y')
+# abline(v = r, h = which.max(bla))
