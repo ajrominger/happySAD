@@ -2,7 +2,7 @@
 % Please edit documentation in R/dintModeGivenS.R
 \name{dintModeGivenS}
 \alias{dintModeGivenS}
-\title{Multinomial CDF}
+\title{Mode probabilities}
 \usage{
 dintModeGivenS(S, pars, mod)
 }
@@ -17,7 +17,7 @@ dintModeGivenS(S, pars, mod)
 a vector of probabilities equal in length to number of octaves (13)
 }
 \description{
-Cumulative probability function of the multinomial distribution
+Probability of a mode across Preston octaves
 }
 \details{
 For Preston octaves 0 through 12, this function calculates the probability that each

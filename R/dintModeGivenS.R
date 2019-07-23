@@ -1,6 +1,6 @@
-#' @title Multinomial CDF
+#' @title Mode probabilities
 #'
-#' @description Cumulative probability function of the multinomial distribution
+#' @description Probability of a mode across Preston octaves
 #'
 #' @details For Preston octaves 0 through 12, this function calculates the probability that each
 #' octave could be a modal octave (mode defined as equal to the maximum frequency of species).
