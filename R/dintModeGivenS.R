@@ -30,21 +30,32 @@ dintModeGivenS <- function(S, pars, mod) {
     octProbs <- tapply(pp, octs, sum)
 
 
-    possModes <- ceiling(S / noct):S
-    ii <- range(which(dbinom(possModes, S, max(octProbs)) > .Machine$double.eps),
-                which(dbinom(possModes, S, min(octProbs)) > .Machine$double.eps))
+    possModes <- floor(S / noct):S
 
-    # limit the number of things we're integrating over
+    # limit number of octaves we look at
+    goodx <- sapply(octProbs, function(p) {
+        dbinom(possModes, S, p) > .Machine$double.eps^0.75
+    })
+    goodx <- colSums(goodx) > 0
+
+    ii <- range(which(dbinom(possModes, S, max(octProbs[goodx])) > .Machine$double.eps^0.75),
+                which(dbinom(possModes, S, min(octProbs[goodx])) > .Machine$double.eps^0.75))
+
+    # limit the number of modes we're integrating over
     likModes <- possModes[ii[1]:ii[2]]
-    goodx <- dbinom(min(likModes), S, octProbs) > .Machine$double.eps
 
+    # browser()
     o <- sapply(x[goodx], function(i) {
-        allS <- sapply(likModes, function(thisS) {
-            probSinBi <- dbinom(thisS, S, octProbs[i])
-            probRestLessS <- pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
-            return(probSinBi * probRestLessS)
-        })
+        probSinBi <- dbinom(likModes, S, octProbs[i])
+        probRestLessS <- numeric(length(probSinBi))
 
+        # only calculate costly convolution for cases where it matters
+        probRestLessS[probSinBi > .Machine$double.eps] <-
+            sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
+                pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
+            })
+
+        allS <- probSinBi * probRestLessS
         return(sum(allS))
     })
 
@@ -53,4 +64,13 @@ dintModeGivenS <- function(S, pars, mod) {
 
     return(out)
 }
+
+# x <- proc.time()
+# dintModeGivenS(500, 0.005, dfish)
+# proc.time() - x
+#
+# x <- proc.time()
+# foo(500, 0.005, dfish)
+# proc.time() - x
+
 
