@@ -34,7 +34,7 @@ pmultinom <- function(q, size, prob, s = size) {
     }
 }
 
-pmultinomApprox <- function(q, size, prob, s = size) {
+pmultinomapprox <- function(q, size, prob, s = size) {
     if(size > 0) {
         # s <- ifelse(size < 12, size, 12)
         # s <- size
@@ -52,13 +52,14 @@ pmultinomApprox <- function(q, size, prob, s = size) {
     }
 }
 
+
 #' @title Sum of upper truncated Poisson random variables
 #'
 # @description
 #'
 # @details
 #'
-#' @param N integer (potentially a vector), the value of summed upper truncated Poisson r.v.'s
+#' @param N integer, the value of summed upper truncated Poisson r.v.'s
 #' @param lambda vector of means for each upper truncted Poisson
 #' @param m integer vector upper (inclusive) limits
 #'
@@ -86,6 +87,12 @@ dsumuptpois <- function(N, lambda, m) {
     return(o)
 }
 
+dsumapprox <- function(N, lambda, m) {
+    mus <- lambda * (1 - dpois(m, lambda) / ppois(m, lambda))
+    sig2s <- mus - (m - mus) * (lambda - mus)
+
+    dnorm(N, sum(mus), sqrt(sum(sig2s)))
+}
 
 #' @title Upper truncated Poisson random variables
 #'
@@ -109,3 +116,16 @@ duptpois <- function(x, lambda, m) {
 
     return(o)
 }
+
+
+# S <- 500
+# b <- 0.005
+# pp <- tapply(dfish(1:(2^13 - 1), b), floor(log(1:(2^13 - 1), 2)), sum)
+# poss <- round(S / 13):S
+#
+#
+# exact <- sapply(poss, function(thisS) pmultinom(rep(thisS, 12), S - thisS, pp[-1]))
+# appro <- sapply(poss, function(thisS) pmultinomapprox(rep(thisS, 12), S - thisS, pp[-1]))
+#
+# plot(appro, abs(exact - appro), xlim = c(0, 0.8))
+# abline(h = 0, v = 0.01, col = 'red')
