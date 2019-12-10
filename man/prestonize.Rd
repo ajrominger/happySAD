@@ -16,7 +16,8 @@ prestonize(x)
 \item{x}{object to Prestonize}
 }
 \value{
-a vector of indeces of the local maxima
+an object of class \code{preston} showing the observed and theoretical
+probabilities for each Preston octave, and recording the total number of species
 }
 \description{
 Bin an SAD into Preston octaves

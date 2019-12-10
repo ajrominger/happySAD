@@ -8,7 +8,8 @@
 #'
 #' @param x object to Prestonize
 #'
-#' @return a vector of indeces of the local maxima
+#' @return an object of class \code{preston} showing the observed and theoretical
+#' probabilities for each Preston octave, and recording the total number of species
 #'
 #' @author Andy Rominger <ajrominger@@gmail.com>
 #'
