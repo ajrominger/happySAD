@@ -23,6 +23,7 @@ pmultinom <- function(q, size, prob, s = size) {
         prob <- prob / sum(prob)
         # browser()
 
+
         o <- prod(ppois(q, s * prob)) / dpois(size, s) *
             dsumuptpois(size, s * prob, q)
         # o[o > 1] <- 1
@@ -46,6 +47,7 @@ pmultinomapprox <- function(q, size, prob, s = size) {
         # o[o > 1] <- 1
         # o[o < 0] <- .Machine$double.eps
 
+        browser()
         return(o)
     } else {
         return(1)
@@ -70,26 +72,39 @@ pmultinomapprox <- function(q, size, prob, s = size) {
 #' @export
 
 dsumuptpois <- function(N, lambda, m) {
-    ff <- vector('list', length(lambda))
-    ff[[1]] <- duptpois(0:ifelse(m[1] < N, m[1], N), lambda[1], m[1])
-
     # browser()
-    for(i in 2:length(lambda)) {
-        ff[[i]] <- cladoRcpp::rcpp_convolve(ff[[i - 1]],
-                                            duptpois(0:ifelse(m[i] < N, m[i], N),
-                                                     lambda[i], m[i]))
+    appx <- dsumapprox(N, lambda, m)
+    appx[is.nan(appx) | is.na(appx)] <- 0
+
+    if(appx < 0.01 | appx > 1 - 0.01) {
+        appx[appx < 0] <- 0
+        appx[appx > 1] <- 1
+
+        return(appx)
+    } else {
+
+        ff <- vector('list', length(lambda))
+        ff[[1]] <- duptpois(0:ifelse(m[1] < N, m[1], N), lambda[1], m[1])
+
+        # browser()
+        for(i in 2:length(lambda)) {
+            ff[[i]] <- cladoRcpp::rcpp_convolve(ff[[i - 1]],
+                                                duptpois(0:ifelse(m[i] < N, m[i], N),
+                                                         lambda[i], m[i]))
+        }
+
+        o <- ff[[length(lambda)]][N + 1]
+
+        o[is.na(o)] <- 0
+
+        return(o)
     }
-
-    o <- ff[[length(lambda)]][N + 1]
-
-    o[is.na(o)] <- 0
-
-    return(o)
 }
 
 dsumapprox <- function(N, lambda, m) {
     mus <- lambda * (1 - dpois(m, lambda) / ppois(m, lambda))
     sig2s <- mus - (m - mus) * (lambda - mus)
+    sig2s[sig2s < 0] <- 0
 
     dnorm(N, sum(mus), sqrt(sum(sig2s)))
 }

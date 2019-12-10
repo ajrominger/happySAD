@@ -1,6 +1,6 @@
 library(happySAD)
 
-bb <- c(0.005, 0.05, 0.5)
+bb <- c(0.005, 0.025, 0.1)
 
 nexp <- sapply(bb, function(b) {
     log(range(qNGivenS(c(0.025, 0.975), 500, b, 'fish'),
@@ -27,7 +27,7 @@ allB <- lapply(bb, function(b) {
     s <- s[goodM]
 
 
-    P <- parallel::mclapply(1:length(s), mc.cores = 10, FUN = function(i) {
+    P <- parallel::mclapply(1:length(s), mc.cores = 3, FUN = function(i) {
         cat(b, ': ', i, '\n', sep = '')
         dintModeGivenS(s[i], pars = b, mod = dfish)
     })
@@ -37,3 +37,5 @@ allB <- lapply(bb, function(b) {
     return(t(M %*% P))
 })
 
+
+save(allB, file = 'manuscript/internal_mode_allB_appx.RData')
