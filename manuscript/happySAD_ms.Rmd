@@ -28,6 +28,18 @@ Outline
     - for winning model, where in param space do they fall
 
 
+Code to-do
+- P(S | N) and P(N | S)
+- P(n_i | S, N)
+- modes
+- model fit with P(n_i |S, N)
+- param scaling under sampling
+- lnorm gamma param space equililance
+- real world SADs 
+    - model fit
+    - param space density
+
+
 ```{r setup, include = FALSE}
 # chunk options
 library(knitr)
