@@ -10,6 +10,23 @@ csl: ecology-letters.csl
 bibliography: happySAD.bib
 ---
 
+Outline
+- Why binning is bad
+    - more error in estimation (e.g. estimate SAD on raw v. binned data)
+    - modes mean little
+    - gambin is bastardized negbinom
+- Issues with sampling
+    - parameters scale with sample size
+    - parametric fit is still pretty good
+    - this is different from the veil line which is a fraught concept
+    - combining samples conflates poisson with negbinom sampling
+- The core debate is between lnorm and gamma and that might not be winnable with finite data
+    - most models come from one or the other
+    - likelihood equivilance across param space of the two models
+- What do real world SADs look like
+    - which models win
+    - for winning model, where in param space do they fall
+
 
 ```{r setup, include = FALSE}
 # chunk options
