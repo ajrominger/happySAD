@@ -52,7 +52,11 @@ dintModeGivenS <- function(S, pars, mod) {
         # only calculate costly convolution for cases where it matters
         probRestLessS[probSinBi > .Machine$double.eps] <-
             sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
-                pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
+                o <- pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
+                o[o > 1] <- 1
+                o[o < .Machine$double.eps] <- 0
+
+                return(o)
             })
 
         allS <- probSinBi * probRestLessS
@@ -65,12 +69,48 @@ dintModeGivenS <- function(S, pars, mod) {
     return(out)
 }
 
-# x <- proc.time()
-# dintModeGivenS(500, 0.005, dfish)
-# proc.time() - x
-#
-# x <- proc.time()
-# foo(500, 0.005, dfish)
-# proc.time() - x
+
+appx_dintModeGivenS <- function(S, pars, mod) {
+    noct <- 13
+    x <- 1:noct
+    nn <- 1:(2^(noct) - 1)
+    octs <- floor(log(nn, 2))
+    pp <- do.call(mod, c(list(nn), as.list(pars)))
+    octProbs <- tapply(pp, octs, sum)
 
 
+    possModes <- floor(S / noct):S
+
+    # limit number of octaves we look at
+    goodx <- sapply(octProbs, function(p) {
+        dbinom(possModes, S, p) > .Machine$double.eps^0.75
+    })
+    goodx <- colSums(goodx) > 0
+
+    ii <- range(which(dbinom(possModes, S, max(octProbs[goodx])) > .Machine$double.eps^0.75),
+                which(dbinom(possModes, S, min(octProbs[goodx])) > .Machine$double.eps^0.75))
+
+    # limit the number of modes we're integrating over
+    likModes <- possModes[ii[1]:ii[2]]
+
+    # browser()
+    o <- sapply(x[goodx], function(i) {
+        probSinBi <- dbinom(likModes, S, octProbs[i])
+        probRestLessS <- numeric(length(probSinBi))
+
+        # only calculate costly convolution for cases where it matters
+        probRestLessS[probSinBi > .Machine$double.eps] <-
+            sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
+                # browser()
+                pmultinomapprox(rep(thisS, noct - 1), S - thisS, octProbs[-i])
+            })
+
+        allS <- probSinBi * probRestLessS
+        return(sum(allS))
+    })
+
+    out <- numeric(noct)
+    out[goodx] <- o
+
+    return(out)
+}
