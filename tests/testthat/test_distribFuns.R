@@ -71,21 +71,34 @@ context('distribution functions work')
 #
 #
 
-
-# N <- 200
-# foo <- dSGivenN(1:200, N, 0.1, 'fish')
 #
-# ss <- 1:150
-# ss <- sample(ss, length(ss), prob = dnorm(seq(-1, 3, length.out = length(ss))), replace = TRUE)
+# N <- 500
+# ss <- 10:150
+# b <- 0.01
+# thr <- dSGivenN(ss, N, b, 'fish')
+#
+#
+#
 # nrep <- 10000
-# goo <- lapply(ss, function(s) {
-#     x <- rfish(s * nrep, 0.1)
-#     xx <- split(x, rep(1:nrep, each = s))
-#
-#     sapply(xx, sum)
+# x <- rfish(max(ss) * nrep, b)
+# sim <- parallel::mclapply(ss, mc.cores = 3, FUN = function(s) {
+#     # x <- rfish(s * nrep, b)
+#     # xx <- split(x, rep(1:nrep, each = s))
+#     # sapply(xx, sum)
+#     #
+#     replicate(nrep, {
+#         sum(sample(x, s, replace = TRUE))
+#     })
 # })
 #
-# goo <- data.frame(s = rep(ss, each = nrep), N = unlist(goo))
+# sim <- data.frame(s = rep(ss, each = nrep), N = unlist(sim))
+# sim <- as.data.frame(simpECDF(sim$s[sim$N == N]))
+# names(sim) <- c('x', 'psim')
 #
-# plot(cumsum(foo), xlim = range(ss), type = 'l', lwd = 3)
-# lines(simpECDF(goo$s[goo$N == N]), col = 'red', lwd = 2)
+# thr <- data.frame(x = ss, pthr = cumsum(thr))
+#
+# plot(thr, log = 'xy')
+# points(sim, col = 'red')
+#
+# comp <- merge(thr, sim, by = 'x')
+# sum((comp$pthr - comp$psim)^2)
