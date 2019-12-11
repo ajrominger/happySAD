@@ -2,13 +2,13 @@
 % Please edit documentation in R/prestonize.R
 \name{prestonize}
 \alias{prestonize}
-\alias{prestonize.integer}
+\alias{prestonize.numeric}
 \alias{prestonize.sad}
 \title{'Prestonize' an SAD}
 \usage{
 prestonize(x)
 
-\method{prestonize}{integer}(x)
+\method{prestonize}{numeric}(x)
 
 \method{prestonize}{sad}(x)
 }

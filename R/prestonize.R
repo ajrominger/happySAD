@@ -23,7 +23,7 @@ prestonize <- function(x) {
 #' @rdname prestonize
 #' @export
 
-prestonize.integer  <- function(x) {
+prestonize.numeric  <- function(x) {
     binx <- floor(log(x, 2))
     binx <- table(factor(binx, levels = 0:max(binx)))
 
@@ -66,6 +66,7 @@ prestonize.sad <- function(x) {
     return(o)
 }
 
+
 #' @export
 print.preston <- function(x) {
     p <- rbind(x$pobs, x$pthr)
@@ -73,4 +74,27 @@ print.preston <- function(x) {
     rownames(p) <- c('probs_obs', 'probs_thr')
     print(p)
     cat('S =', x$S, '\n')
+}
+
+
+#' @export
+plot.preston <- function(x, ...) {
+    sobs <- x$pobs * x$S
+    sthr <- x$pthr * x$S
+
+    plot(1, type = 'n',
+         xlim = range(x$binx), ylim = c(0, max(sobs, sthr, na.rm = TRUE)),
+         xlab = 'Octaves', ylab = 'Number of species', frame.plot = FALSE,
+         ...)
+
+    if(any(!is.na(x$pobs))) {
+        w <- 0.75 * (0 - par('usr')[1])
+        b <- x$binx[!is.na(sobs)]
+        sobs <- sobs[!is.na(sobs)]
+
+        rect(xleft = b - w, xright = b + w,
+             ybottom = 0, ytop = sobs, col = 'gray')
+    }
+
+    points(x$binx, sthr, type = 'b', col = 'red')
 }
