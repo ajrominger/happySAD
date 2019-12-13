@@ -14,7 +14,7 @@ dintModeGivenS(S, mod, pars)
 \item{pars}{vector of parameters for the SAD model}
 }
 \value{
-a vector of probabilities equal in length to number of octaves (13)
+the probability that the first bin is not the modal bin
 }
 \description{
 Probability of a mode across Preston octaves

@@ -15,7 +15,7 @@
 #' @param mod function specifying the SAD density function (e.g. \code{dfish})
 #' @param pars vector of parameters for the SAD model
 #'
-#' @return a vector of probabilities equal in length to number of octaves (13)
+#' @return the probability that the first bin is not the modal bin
 #'
 #' @author Andy Rominger <ajrominger@@gmail.com>
 #'
