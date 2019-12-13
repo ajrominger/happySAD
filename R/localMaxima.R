@@ -19,7 +19,7 @@ localMaxima <- function(x, by = 1, xmin = 0) {
     x <- c(xmin, rle(x)$values, xmin)
     x <- rle(by * round(x / by))$values
 
-    plot(x)
+
     shape <- diff(sign(diff(x, na.pad = FALSE)))
 
     pks <- lapply(which(shape < 0), function(i) {
@@ -37,9 +37,3 @@ localMaxima <- function(x, by = 1, xmin = 0) {
 
     return(pks)
 }
-
-x <- c(1, 2, 3, 2, 1, 4)
-localMaxima(x, by = 2)
-localMaxima(2 * round(x / 2), by = 2)
-
-
