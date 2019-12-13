@@ -12,8 +12,8 @@
 #' \eqn{P(\text{all } o_{j \neq i} \leq s)} is given by \code{pmultinom(rep(s, 12), S - s, p[-i])}
 #'
 #' @param S number of spcies
+#' @param mod function specifying the SAD density function (e.g. \code{dfish})
 #' @param pars vector of parameters for the SAD model
-#' @param mod string specifying the SAD density function (e.g. \code{'dfish'})
 #'
 #' @return a vector of probabilities equal in length to number of octaves (13)
 #'
@@ -21,7 +21,8 @@
 #'
 #' @export
 
-dintModeGivenS <- function(S, pars, mod) {
+dintModeGivenS <- function(S, mod, pars) {
+    # browser()
     noct <- 13
     x <- 1:noct
     nn <- 1:(2^(noct) - 1)
@@ -44,31 +45,56 @@ dintModeGivenS <- function(S, pars, mod) {
     # limit the number of modes we're integrating over
     likModes <- possModes[ii[1]:ii[2]]
 
-    # browser()
-    o <- sapply(x[goodx], function(i) {
-        probSinBi <- dbinom(likModes, S, octProbs[i])
-        probRestLessS <- numeric(length(probSinBi))
 
-        # only calculate costly convolution for cases where it matters
-        probRestLessS[probSinBi > .Machine$double.eps] <-
-            sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
-                o <- pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
-                o[o > 1] <- 1
-                o[o < .Machine$double.eps] <- 0
+    # probability of S in bin 1
+    probSinBi <- dbinom(likModes, S, octProbs[1])
 
-                return(o)
-            })
+    # prob all other bins have less
+    probRestLessS <- numeric(length(probSinBi))
 
-        allS <- probSinBi * probRestLessS
-        return(sum(allS))
-    })
+    # only calculate costly convolution for cases where it matters
+    probRestLessS[probSinBi > .Machine$double.eps] <-
+        sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
+            o <- pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-1])
+            o[o > 1] <- 1
+            o[o < .Machine$double.eps] <- 0
 
-    out <- numeric(noct)
-    out[goodx] <- o
+            return(o)
+        })
 
-    return(out)
+    # sum over all S
+    allS <- probSinBi * probRestLessS
+
+    # return prob that first bin is not modal
+    return(1 - sum(allS))
+
+
+    #
+    #
+    # # browser()
+    # o <- sapply(x[goodx], function(i) {
+    #     probSinBi <- dbinom(likModes, S, octProbs[i])
+    #     probRestLessS <- numeric(length(probSinBi))
+    #
+    #     # only calculate costly convolution for cases where it matters
+    #     probRestLessS[probSinBi > .Machine$double.eps] <-
+    #         sapply(likModes[probSinBi > .Machine$double.eps], function(thisS) {
+    #             o <- pmultinom(rep(thisS, noct - 1), S - thisS, octProbs[-i])
+    #             o[o > 1] <- 1
+    #             o[o < .Machine$double.eps] <- 0
+    #
+    #             return(o)
+    #         })
+    #
+    #     allS <- probSinBi * probRestLessS
+    #     return(sum(allS))
+    # })
+    #
+    # out <- numeric(noct)
+    # out[goodx] <- o
+    #
+    # return(out)
 }
-
 
 appx_dintModeGivenS <- function(S, pars, mod) {
     noct <- 13

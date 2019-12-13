@@ -4,14 +4,14 @@
 \alias{dintModeGivenS}
 \title{Mode probabilities}
 \usage{
-dintModeGivenS(S, pars, mod)
+dintModeGivenS(S, mod, pars)
 }
 \arguments{
 \item{S}{number of spcies}
 
-\item{pars}{vector of parameters for the SAD model}
+\item{mod}{function specifying the SAD density function (e.g. \code{dfish})}
 
-\item{mod}{string specifying the SAD density function (e.g. \code{'dfish'})}
+\item{pars}{vector of parameters for the SAD model}
 }
 \value{
 a vector of probabilities equal in length to number of octaves (13)
