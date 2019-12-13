@@ -43,7 +43,8 @@ Code to-do
 ```{r setup, include = FALSE}
 # chunk options
 library(knitr)
-opts_chunk$set(echo = FALSE, fig.width = 4, fig.height = 4, fig.align = 'center', cache = TRUE)
+opts_chunk$set(echo = FALSE, fig.width = 4, fig.height = 4, fig.align = 'center', 
+               cache = TRUE)
 
 # plotting defaults
 parArgs <- list(mar = c(3, 3, 0, 0) + 0.5, mgp = c(1.75, 0.5, 0), tcl = -0.25)
@@ -78,33 +79,6 @@ bb <- seq(0.001, 0.1, length.out = npar)
 par(parArgs)
 sadShape(list(b = bb), nn, dfish, xlab = expression(beta), ylab = '',
          main = 'Log-series')
-
-
-# ymax <- max(sapply(bb, function(b) dfish(1, b)))
-# 
-# par(parArgs)
-# par(plt = c(0.015, 0.985, 0.25, 0.9))
-# 
-# plot(bb, numeric(npar), type = 'n', yaxt = 'n', axes = FALSE, xlab = expression(beta))
-# axis(1)
-# mtext('Logseries', line = 0.5)
-# 
-# strt <- par('plt')[1]
-# bystep <- diff(par('plt')[1:2]) / npar
-# m <- cbind(seq(strt, by = bystep, length.out = 4), 
-#            seq(strt + bystep, by = bystep, length.out = npar), 
-#            par('plt')[3], par('plt')[4])
-# 
-# foo <- split.screen(m, erase = FALSE)
-# for(i in 1:npar) {
-#     screen(i, new = FALSE)
-#     par(mar = c(0.2, 0, 0, 0) + 0.1, mgp = c(1, 0.2, 0), tcl = -0.2)
-#     plot(nn, dfish(nn, bb[i]), xlab = '', ylab = '', log = 'x', type = 'l', lwd = 2, 
-#          ylim = c(.Machine$double.eps^0.75, ymax), xaxt = 'n', yaxt = 'n')
-#     # logAxis(1, expLab = TRUE, minor = FALSE)
-# }
-# 
-# close.screen(all.screens = TRUE)
 ```
 
 
@@ -133,25 +107,38 @@ sadShape(list(mu = mm, s = ss), nn, dplnorm, xlab = expression(mu), ylab = expre
 
 ## Problems with binning
 
-```{r multi_mode}
-s <- seq(100, 500, length.out = 5)
-b <- 10^seq(-3, -1, by = 0.5)
+```{r multi_mode_comp}
+s <- seq(100, 500, by = 50)
+b <- 10^seq(-3, -1, by = 0.25)
 sb <- as.matrix(expand.grid(s = s, b = b))
 
-p1mod <- lapply(1:nrow(sb), function(i) {
+pMultMod <- lapply(1:nrow(sb), function(i) {
     thisS <- sb[i, 1]
     thisB <- sb[i, 2]
 
-    dsingModeGivenS(thisS, dfish, thisB)
+    1 - dsingModeGivenS(thisS, dfish, thisB)
 })
 
+pMultModMat <- matrix(unlist(pMultMod), nrow = length(s), ncol = length(b))
+```
 
-p1modMat <- matrix(unlist(p1mod), nrow = length(s), ncol = length(b))
+```{r multi_mode_plot, fig.width=5}
+colz <- viridis(32)
 
-par(parArgs)
-image(1:length(b), s, t(p1modMat), col = viridis(16), zlim = c(0, 1),
-      xlab = expression(beta), ylab = 'S', xaxt = 'n')
-axis(1, at = 1:length(b), labels = paste0('10^', log(b, 10)))
+sbimage(s, b, pMultModMat, colz, parArgs, 'Prob. of multiple modes')
+```
+
+```{r internal_mode, fig.width=5}
+pintmod <- lapply(1:nrow(sb), function(i) {
+    thisS <- sb[i, 1]
+    thisB <- sb[i, 2]
+
+    dintModeGivenS(thisS, dfish, thisB)
+})
+
+pIntModMat <- matrix(unlist(pintmod), nrow = length(s), ncol = length(b))
+
+sbimage(s, b, pIntModMat, colz, parArgs, 'Prob. of internal mode')
 ```
 
 ## correlation of various goodness of fit metrics
