@@ -32,7 +32,7 @@ Code to-do
 - P(S | N) and P(N | S)
 - P(n_i | S, N)
 - modes
-- model fit with P(n_i |S, N)
+- model fit with P(n_i | S, N)
 - param scaling under sampling
 - lnorm gamma param space equililance
 - real world SADs 
@@ -53,7 +53,8 @@ lwdDefault <- 2
 # needed libraries
 library(pika)
 library(socorro)
-sapply(list.files('../R'), function(f) source(paste('../R', f, sep = '/')))
+library(happySAD)
+library(viridis)
 ```
 
 
@@ -129,6 +130,29 @@ sadShape(list(mu = mm, s = ss), nn, dplnorm, xlab = expression(mu), ylab = expre
 
 
 # Results
+
+## Problems with binning
+
+```{r multi_mode}
+s <- seq(100, 500, length.out = 5)
+b <- 10^seq(-3, -1, by = 0.5)
+sb <- as.matrix(expand.grid(s = s, b = b))
+
+p1mod <- lapply(1:nrow(sb), function(i) {
+    thisS <- sb[i, 1]
+    thisB <- sb[i, 2]
+
+    dsingModeGivenS(thisS, dfish, thisB)
+})
+
+
+p1modMat <- matrix(unlist(p1mod), nrow = length(s), ncol = length(b))
+
+par(parArgs)
+image(1:length(b), s, t(p1modMat), col = viridis(16), zlim = c(0, 1),
+      xlab = expression(beta), ylab = 'S', xaxt = 'n')
+axis(1, at = 1:length(b), labels = paste0('10^', log(b, 10)))
+```
 
 ## correlation of various goodness of fit metrics
 
