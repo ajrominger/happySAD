@@ -40,7 +40,7 @@ expectedN <- function(S, mod, pars) {
 #' @rdname expectedN
 
 solve4expectedN <- function(N, mod, pars) {
-    uniroot(.solExpectedN, c(1, N), N = N, mod = 'fish', pars = bta)
+    uniroot(.solExpectedN, c(1, N), N = N, mod = mod, pars = pars)
 }
 
 
