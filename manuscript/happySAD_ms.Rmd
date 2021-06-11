@@ -29,9 +29,8 @@ Outline
 
 
 Code to-do
-- P(S | N) and P(N | S)
+- P(S | N) 
 - P(n_i | S, N)
-- modes
 - model fit with P(n_i | S, N)
 - param scaling under sampling
 - lnorm gamma param space equililance
