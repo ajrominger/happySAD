@@ -69,16 +69,21 @@ fitBinnedSAD <- function(x, model, keepData = TRUE) {
 #     return(tapply(pp, b, sum))
 # }
 #
+
 # x <- rtnegb(200, 5, 0.1)
 # fitBinnedSAD(x, 'tnegb')[c(1, 2, 4)]
 #
 #
-#
-# fitSAD(moths, 'fish')
+# library(gambin)
+# data(moths)
+# plot(sad(moths, 'fish', keepData = TRUE), ptype = 'rad', log = 'y')
 #
 # x <- rfish(200, 0.01)
 # fitSAD(x, 'fish')
 # fitBinnedSAD(x, 'fish')[c(1, 2, 4)]
 # fitBinFish(moths, 0.1)
 # lines(fitGambin(x))
+#
+# AIC(fit_abundances(x, no_of_components = 3))
+#
 # fit_abundances(x)
