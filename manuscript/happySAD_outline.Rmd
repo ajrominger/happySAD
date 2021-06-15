@@ -9,7 +9,7 @@ output: pdf_document
 - As such we should have robust methods to test SAD predictions
 - Despite decades of work on SAD, there is little agreement about best practices
 - Here we lay out guidance to be happy with your SAD
-    - SAD models are mathematically related to one another and recognizing that can help us identify what we're really testing
+    <!-- - SAD models are mathematically related to one another and recognizing that can help us identify what we're really testing -->
     - Common visualization methods are mathematical transformations of one another, but some are better than others
         - use CDF or Rank
         - Binning data does not help identify nor illustrate the shape of the SAD; this has been said many times before, can we all finally agree to stop?
@@ -28,13 +28,13 @@ output: pdf_document
     - something about scaling of parameters across space or something (new)
 
 
-## Mathematical relationships between SAD forms
+<!-- ## Mathematical relationships between SAD forms -->
 
-- We first use known results from the applied mathematics literature to draw connections between parametric forms of SAD models
-- *Maybe: We then use KL divergences to understand how identifiable two major classes of SAD models are*
-    - *what is KL divergence*
-    - *how does sample size come into play*
-- **Figure** map of SADs and (maybe, maybe not at all: map of plognorm and tnegbiom parameter spaces)
+<!-- - We first use known results from the applied mathematics literature to draw connections between parametric forms of SAD models -->
+<!-- - *Maybe: We then use KL divergences to understand how identifiable two major classes of SAD models are* -->
+<!--     - *what is KL divergence* -->
+<!--     - *how does sample size come into play* -->
+<!-- - **Figure** map of SADs and (maybe, maybe not at all: map of plognorm and tnegbiom parameter spaces) -->
 
 ## Visualization practices
 
