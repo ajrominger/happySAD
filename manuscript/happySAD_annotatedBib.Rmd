@@ -1,0 +1,27 @@
+---
+title: "Finding happiness in your SAD"
+output: pdf_document
+csl: ecology-letters.csl
+bibliography: happySAD.bib
+---
+
+## Key references
+
+### Goodness of fit
+
+- @dgof: R package that implements discrete versions of classic tests like KS; look into for finalizing suite of goodness of fit metrics
+
+### Model comparison
+
+- @connolly2009: Develops bootstrap goodness of fit method; finds most support for Poisson lognormal in data considered
+- @baldridge2016: Uses AIC to compare different SAD forms; finds logseries wins most
+- @matthews2014: Reviews SAD shapes; proposes that SAD analysis should include both model comparison (e.g. with AIC) and goodness of fit (e.g. parametric bootstrap); cites @connolly2009 for parametric bootstrap; says some weird stuff like rank plots have a seeminging different likelihood than raw data?
+
+### Different SAD models
+
+- @engen1996gamma: Different population dynamic processes that generate a gamma-type distribution; includes density dependence, environmental fluctuations, and speciation
+- @mcgill2007: Argues to use AIC; argues that we need more than just SAD to draw conclusions about process; discusses different plotting methods
+- @ulrich2010sad: Surveys lit on SAD shape and claims "complete" censuses of terrestrial communities yield log-normal shapes; but "completeness" is estimated as number of singletons (totally circular); cites (old) literature on importance of sampling; visually (?) analyses fit in both binned and rank plots
+- @matthews2015: Reviews potential relevance of SAD analysis to applied and conservation work; makes claims (and offers citations) about logseries being in disturbed communities; makes claims that shape of SAD can be meaningful in informing underlying ecological processes; uses binned plots
+
+## Citations
