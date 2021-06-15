@@ -1,5 +1,4 @@
 dorder.sad <- function(r, x, s) {
-    # browser()
     n <- s$nobs
     k <- n - r + 1
     dfun <- getdfun(s)
@@ -7,14 +6,16 @@ dorder.sad <- function(r, x, s) {
 
     jj <- 0:(n - k)
 
-    o <- sapply(x, function(xi) {
-        sum(choose(n, jj) * (
-            (1 - pfun(xi))^jj *
-                pfun(xi)^(n - jj) -
-                (1 - pfun(xi) + dfun(xi))^jj *
-                (pfun(xi) - dfun(xi))^(n - jj)
-        ))
-    })
+    nChooseJ <- choose(n, jj)
+    p <- pfun(x)
+    d <- dfun(x)
+
+    a1 <- outer(1 - p, jj, '^')
+    a2 <- outer(p, n - jj, '^')
+    a3 <- outer(1 - p + d, jj, '^')
+    a4 <- outer(p - d, n - jj, '^')
+
+    o <- (a1 * a2 - a3 * a4) %*% nChooseJ
 
     o[o < .Machine$double.eps^0.75] <- 0
 
