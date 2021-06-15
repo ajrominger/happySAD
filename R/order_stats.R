@@ -15,12 +15,13 @@ dorder.sad <- function(r, x, s) {
     a3 <- outer(1 - p + d, jj, '^')
     a4 <- outer(p - d, n - jj, '^')
 
-    o <- (a1 * a2 - a3 * a4) %*% nChooseJ
+    o <- as.vector((a1 * a2 - a3 * a4) %*% nChooseJ)
 
     o[o < .Machine$double.eps^0.75] <- 0
 
     return(o)
 }
+
 
 
 dmse <- function(s) {
